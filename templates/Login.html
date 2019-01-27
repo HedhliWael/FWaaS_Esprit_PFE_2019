@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+    <title>FWaaS - Login Page</title>
+    <link rel="stylesheet" href="static/styles.css" type="text/css"/>
+    <!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+    <!--
+    anatine, a free CSS web template by ZyPOP (zypopwebtemplates.com/)
+
+    Download: http://zypopwebtemplates.com/
+
+    License: Creative Commons Attribution
+    //-->
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"/>
+</head>
+
+<body>
+<section id="body" class="width">
+    <aside id="sidebar" class="column-left">
+
+        <header>
+            <h1><a href="#">FWaaS Management Plateform</a></h1>
+            <h2>Migrate Customers or Create new one</h2>
+        </header>
+
+        <nav id="mainnav">
+            <ul>
+                <li class="selected-item"><a href="index.html">Login</a></li>
+                <li><<a href="{{ url_for('about') }}">About</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <section id="content" class="column-right">
+        <article>
+            <h2>Attention !</h2>
+            <h5>Administrator login is needed to access the management plateform</h5>
+            <p>&nbsp;</p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <code>{{ message }} </code>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <fieldset>
+                <legend>Login</legend>
+
+                {% block content %}
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        {{ form.username.label() }}
+                        {{ form.username() }}
+                        <br>
+                        {{ form.password.label() }}
+                        {{ form.password() }}
+                        <br>
+                        {{ form.submit(class_="formbutton") }}
+                    </form>
+                {% endblock content %}
+            </fieldset>
+
+        </article>
+
+        <footer class="clear">
+            <p>&copy; 2019 FWaas Management Plateform by Hedhli Wael</p>
+        </footer>
+    </section>
+    <div class="clear"></div>
+</section>
+</body>
+</html>

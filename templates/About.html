@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+    <title>FWaaS</title>
+    <link rel="stylesheet" href="static/styles.css" type="text/css"/>
+    <!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+    <!--
+    anatine, a free CSS web template by ZyPOP (zypopwebtemplates.com/)
+
+    Download: http://zypopwebtemplates.com/
+
+    License: Creative Commons Attribution
+    //-->
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"/>
+</head>
+
+<body>
+
+<section id="body" class="width">
+    <aside id="sidebar" class="column-left">
+
+        <header>
+            <h1><a href="#">FWaaS Management Plateform</a></h1>
+            <h2>Migrate Customers or Create new one</h2>
+        </header>
+
+        <nav id="mainnav">
+            <ul>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                    <li><a href="#">Add new Customer</a></li>
+                    <li><a href="#">Migrate an existing Customer</a></li>
+                    <li class="selected-item"><a href="{{ url_for('about') }}">About</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </aside>
+    <section id="content" class="column-right">
+
+        <article>
+            <h2>Graduation Projet</h2>
+            <p>&nbsp;</p>
+
+
+            <h3>This plateform provides :</h3>
+            <ul>
+                <li>Migration existing Customers vdom from LinkerSec to the new FWaaS NXO solution</li>
+                <li>Adding new customers to the FWaaS platform</li>
+            </ul>
+            <p>&nbsp;</p>
+
+            <h3>How to use</h3>
+            <blockquote><p>Select from the menu in the left the action you need to make then do what you want</p>
+            </blockquote>
+            <p>&nbsp;</p>
+            <footer class="clear">
+                <p>&copy; 2019 FWaas Management Plateform by Hedhli Wael</p>
+            </footer>
+        </article>
+    </section>
+
+    <div class="clear"></div>
+
+</section>
+
+
+</body>
+</html>
