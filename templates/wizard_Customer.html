@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+    <title>FWaaS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" type="text/css"/>
+    <!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+    <!--
+    anatine, a free CSS web template by ZyPOP (zypopwebtemplates.com/)
+
+    Download: http://zypopwebtemplates.com/
+
+    License: Creative Commons Attribution
+    //-->
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"/>
+</head>
+
+<body>
+
+<section id="body" class="width">
+    <aside id="sidebar" class="column-left">
+
+        <header>
+            <h1><a href="#">FWaaS Management Plateform</a></h1>
+            <h2>Migrate Customers or Create new one</h2>
+        </header>
+
+        <nav id="mainnav">
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li class="selected-item"><a href="#">Add new Customer</a></li>
+                <li><a href="{{ url_for('nc_w_template') }}">Using template</a></li>
+                <li><a href="{{ url_for('nc_customised') }}">Customised</a></li>
+                <li><a href="#">Migrate an existing Customer</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <section id="content" class="column-right">
+        <article>
+            <h2>Attention !</h2>
+            <h5>Administrator login is needed to access the management plateform</h5>
+            <p>&nbsp;</p>
+
+            <h3>Auto generated settings : </h3>
+            <blockquote><p>Newtork Objects : LAN and adresse object<br>
+                IP Pool Object : public IP Network object<br>
+                Generic policy creation : policy to allow access to Internet from LAN<br>
+                Nat using the IP public<br>
+                Generating routes for RFC1918 to LAN<br>
+                Adding default route to internet</p></blockquote>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <code>{{ message }} </code>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <fieldset>
+                <legend>Customer Form</legend>
+
+                {% block content %}
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        {{ form.Customer_name.label() }}
+                        {{ form.Customer_name() }}
+                        <br>
+                        {{ form.vdom_name.label() }}
+                        {{ form.vdom_name() }}
+                        <br><br>
+                        <legend>LAN settings</legend>
+                        <br>
+                        <table>
+                            <tr>
+                                <th>{{ form.vlan_id_lan.label() }}</th>
+                                <th>{{ form.ip_adresse_lan.label() }}</th>
+                                <th>{{ form.masque_lan.label() }}</th>
+                            </tr>
+                            <tr>
+                                <th>{{ form.vlan_id_lan() }}</th>
+                                <th>{{ form.ip_adresse_lan() }}</th>
+                                <th>{{ form.masque_lan() }}</th>
+                            </tr>
+                        </table>
+                        <br>
+                        <br>
+                        <legend>WAN settings</legend>
+                        <br>
+                        <table>
+                            <tr>
+                                <th>{{ form.vlan_id_wan.label() }}</th>
+                                <th>{{ form.ip_adresse_wan.label() }}</th>
+                                <th>{{ form.masque_wan.label() }}</th>
+                            </tr>
+                            <tr>
+                                <th>{{ form.vlan_id_wan() }}</th>
+                                <th>{{ form.ip_adresse_wan() }}</th>
+                                <th>{{ form.masque_wan() }}</th>
+                            </tr>
+                        </table>
+                        <br>
+                        <br>
+                        {{ form.ip_publique.label() }}
+                        {{ form.ip_publique() }}<br>
+                        <br>
+                        {{ form.submit(class_="formbutton") }}
+                    </form>
+                {% endblock content %}
+            </fieldset>
+
+        </article>
+    </section>
+
+    <div class="clear"></div>
+
+</section>
+
+
+</body>
+</html>

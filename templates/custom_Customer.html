@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>FWaaS</title>
-<link rel="stylesheet" href="static/styles.css" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" type="text/css" />
 <!--[if lt IE 9]>
 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
@@ -29,8 +29,10 @@ License: Creative Commons Attribution
 
 			<nav id="mainnav">
   				<ul>
-                <li class="selected-item"><a href="{{ url_for('home') }}">Home</a></li>
-				<li><a href="{{ url_for('nc_add') }}">Add new Customer</a></li>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+				<li><a href="#">Add new Customer</a></li>
+                    <li><a href="{{ url_for('nc_w_template') }}">Using template</a></li>
+                    <li class="selected-item"><a href="{{ url_for('nc_customised') }}">Customised</a></li>
 				<li><a href="#">Migrate an existing Customer</a></li>
                 <li><a href="{{ url_for('about') }}">About</a></li>
 				<li><a href="{{ url_for('logout') }}">Logout</a></li>
@@ -38,12 +40,12 @@ License: Creative Commons Attribution
 			</nav>
 			</aside>
 			<section id="content" class="column-right">
-                		
+
 	    <article>
 				<h2>Plateform Purpose</h2>
 				<p>&nbsp;</p>
 
-				
+
 				<h3>This plateform provides :</h3>
 				<ul>
 					<li>Migration existing Customers vdom from LinkerSec to the new FWaaS NXO solution</li>

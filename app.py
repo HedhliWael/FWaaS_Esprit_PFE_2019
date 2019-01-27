@@ -1,7 +1,7 @@
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash
-from forms import LoginForm
+from forms import LoginForm, NewCustomerWizardForm
 
 app = Flask(__name__)
 
@@ -37,7 +37,7 @@ db.session.commit()"""
 
 @app.route('/test')
 def testing():
-    return 'Hello you!'
+    return render_template('New_Customer.html', title='NC')
 
 
 @app.route("/about")
@@ -71,6 +71,22 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
+@app.route("/new")
+def nc_add():
+    return render_template('New_Customer.html', title='new customer')
+
+
+@app.route("/new/wizard", methods=['GET', 'POST'])
+def nc_w_template():
+    form = NewCustomerWizardForm()
+    return render_template('wizard_Customer.html', title='add customer with wizard',form=form)
+
+
+@app.route("/new/custom")
+def nc_customised():
+    return render_template('custom_Customer.html', title='add customer')
 
 
 if __name__ == '__main__':
