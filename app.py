@@ -2,6 +2,7 @@ from flask_login import UserMixin, login_user, LoginManager, current_user, logou
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash
 from forms import LoginForm, NewCustomerWizardForm
+import pyfortiapi
 
 app = Flask(__name__)
 

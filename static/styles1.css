@@ -210,12 +210,14 @@ section#content {
 }
 .column-left {
 	float:left;
+    width: 25%
 }
 .column-right {
 	float:right;
+    width: 75%
 }
 aside#sidebar {
-	width:auto;
+    width: 250px;
 	position: fixed;
 }
 nav#mainnav ul {
@@ -315,37 +317,4 @@ footer p a:hover { color:#333; border-bottom-color: #333; }
 }
 .clear {
 	display: block;
-}
-
-
-
-
-
-@media screen and (max-width: 740px) {
-
-	body { font-size: 0.9em; }	
-
-
-	.width { width:auto; padding-left: 10px; padding-right: 10px; }
-
-	.column-left , .column-right { margin:0px;}
-
-	header h1, header h2, nav#mainnav li a { text-align:center; }
-	
-	section#content, aside#sidebar { position: relative; float: none; width: auto; margin-left: 0; }
-
-	
-}
-
-
-@media screen and (max-width: 540px) {
-
-	body { font-size: 0.8em; }
-
-	header, header h1 a, header h1 a:hover { text-align: center; padding: 10px 0 0 0; font-size: 1.1em; }
-
-
-	nav#mainnav ul li a { margin-top: 0; padding: 1em; }
-
-
 }
