@@ -1,8 +1,9 @@
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash
+import FortigateApi
 from forms import LoginForm, NewCustomerWizardForm
-import pyfortiapi
+
 
 app = Flask(__name__)
 
@@ -14,6 +15,8 @@ db = SQLAlchemy(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+Fortigate_device = FortigateApi.Fortigate("83.206.181.241:20443", "root", "NXO", "testtest123")
 
 
 @login_manager.user_loader
@@ -74,7 +77,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route("/new")
+@app.route("/new", methods=['GET', 'POST'])
 def nc_add():
     return render_template('New_Customer.html', title='new customer')
 
@@ -82,7 +85,11 @@ def nc_add():
 @app.route("/new/wizard", methods=['GET', 'POST'])
 def nc_w_template():
     form = NewCustomerWizardForm()
-    return render_template('wizard_Customer.html', title='add customer with wizard',form=form)
+    if form.vlan_id_lan.data:
+        flash("data retrevied = " + form.vlan_id_lan.data)
+    if form.https_access_lan.data:
+        flash('https access')
+    return render_template('wizard_Customer.html', title='add customer with wizard', form=form)
 
 
 @app.route("/new/custom")

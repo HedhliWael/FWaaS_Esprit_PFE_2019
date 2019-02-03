@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired
 
 
@@ -19,6 +19,12 @@ class NewCustomerWizardForm(FlaskForm):
     ip_adresse_wan = StringField('IP adresse ', validators=[DataRequired()])
     masque_wan = StringField('Masque ', validators=[DataRequired()])
     ip_publique = StringField('IP Publique : ', validators=[DataRequired()])
+    ssh_access_lan = BooleanField()
+    https_access_lan = BooleanField()
+    ping_access_lan = BooleanField()
+    ssh_access_wan = BooleanField()
+    https_access_wan = BooleanField()
+    ping_access_Wan = BooleanField()
     submit = SubmitField('validate and submit')
 
 

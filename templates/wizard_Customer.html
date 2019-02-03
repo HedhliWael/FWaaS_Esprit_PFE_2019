@@ -86,6 +86,13 @@
                             </tr>
                         </table>
                         <br>
+                        <legend>LAN access options</legend>
+                        <p>ssh</p>
+                        {{ form.ssh_access_lan(value='Allow_ssh') }}
+                        <p>https</p>
+                        {{ form.https_access_lan(value='Allow_https') }}
+                        <p>ping</p>
+                        {{ form.ping_access_lan(value='Allow_ping') }}
                         <br>
                         <legend>WAN settings</legend>
                         <br>
@@ -101,6 +108,14 @@
                                 <th>{{ form.masque_wan() }}</th>
                             </tr>
                         </table>
+                        <legend>WAN access options</legend>
+                        <p>ssh</p>
+                        {{ form.ssh_access_wan(value='Allow_ssh') }}
+                        <p>https</p>
+                        {{ form.https_access_wan(value='Allow_https') }}
+                        <p>ping</p>
+                        {{ form.ping_access_Wan(value='Allow_ping') }}
+                        <br>
                         <br>
                         <br>
                         {{ form.ip_publique.label() }}
