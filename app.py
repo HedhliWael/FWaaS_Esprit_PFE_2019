@@ -1,9 +1,10 @@
+import json
+
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash
 import FortigateApi
 from forms import LoginForm, NewCustomerWizardForm
-
 
 app = Flask(__name__)
 
@@ -41,7 +42,15 @@ db.session.commit()"""
 
 @app.route('/test')
 def testing():
-    return render_template('New_Customer.html', title='NC')
+    i = 1
+    result = json.loads(Fortigate_device.GetFwIPpool())
+    print()
+    for interface in result['results']:
+        flash("IP Pool " + str(i) + " : " + interface['name'] + " " + interface['startip'] + " " + interface[
+            'endip'])
+        i = i + 1
+
+    return render_template('test.html', title='test')
 
 
 @app.route("/about")
