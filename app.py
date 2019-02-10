@@ -44,7 +44,6 @@ db.session.commit()"""
 def testing():
     i = 1
     result = json.loads(Fortigate_device.GetFwIPpool())
-    print()
     for interface in result['results']:
         flash("IP Pool " + str(i) + " : " + interface['name'] + " " + interface['startip'] + " " + interface[
             'endip'])
