@@ -17,7 +17,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-Fortigate_device = FortigateApi.Fortigate("83.206.181.241:20443", "root", "NXO", "testtest123")
+Test_Fortigate = FortigateApi.Fortigate("192.168.19.141", "root", "PFE", "pfepfe")
 
 
 @login_manager.user_loader
@@ -43,7 +43,11 @@ db.session.commit()"""
 @app.route('/test')
 def testing():
     i = 1
-    result = json.loads(Fortigate_device.GetFwIPpool())
+    result = json.loads(Test_Fortigate.GetFwIPpool())
+    Test_Fortigate.AddFwAddress("vlan85_tt", "10.20.30.40/24", associated_interface="Vlan80",
+                                comment="added from Rest API")
+    print(Test_Fortigate.AddVdom("test"))
+    print(Test_Fortigate.GetFwAddress("vlan85"))
     for interface in result['results']:
         flash("IP Pool " + str(i) + " : " + interface['name'] + " " + interface['startip'] + " " + interface[
             'endip'])
