@@ -1278,7 +1278,7 @@ class Fortigate:
         #schedule: schedule (type string)(default always)
         #nat: nat, type choice string: enable or disable (type string)(default disable)
         #poolname: if you enabled nat, the poolname (type string)(default [])
-        #ippool: if you enabled nat, the ippool (type string)(default disable)
+        #ippool: if you enabled nat, the  (type string)(default disable)
         #status: the status of the policy, type choice string: enable or disable (default enable)
         #comment: (type string)
         #traffic_shaper: traffic shaper object name (type string)
