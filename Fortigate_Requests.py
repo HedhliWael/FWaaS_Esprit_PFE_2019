@@ -9,7 +9,7 @@ FGT_Root = "192.168.136.129"
 FGT_Vdom = "192.168.1.83"
 
 vdom_name = 'Vdom_3'
-Firewall_v2 = FortigateApi.Fortigate(FGT_Root, "root", "PFE", "pfepfe")
+Firewall_v2 = FortigateApi.Fortigate(FGT_Root, "root", "admin", "admin")
 Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
 
 
@@ -41,7 +41,7 @@ def create_and_associate_interface_vlan_to_vdom(vdom_name, Firewall_v2, vlan, in
     if vlan in interfaces_list:
         msg = "Vlan " + vlan + " exist, skipping creation"
     else:
-        msg = "creating interface"
+        msg = "creating interface " + vlan
         Firewall_v2.AddVlanInterface(vlan, intrf_physique, vlan_id, ip, vdom_name, allowed_access)
     return msg
 
@@ -84,9 +84,9 @@ def create_ippool(Firewall_v2_noprev, ippool, ippool_name, vdom_name):
 
 
 ## Adresse Objects
-def create_adresse_object(Firewall_v2_noprev, ip):
+def create_adresse_object(Firewall_v2_noprev, ip, object_name):
     json_resultat = json.loads(Firewall_v2_noprev.GetFwAddress())
-    object_name = ip + "_LAN"
+
     adrs_list = []
     msg = ""
     object_adresse = str(ipcalc.Network(ip).network()) + "/" + str(ipcalc.Network(ip).subnet())
@@ -121,5 +121,5 @@ def create_route(Firewall_v2_noprev, destination, gw, interface, comment):
         msg = "Route Exist , skipping creating"
     else:
         Firewall_v2_noprev.AddRouterStatic(destination, interface, gw, comment)
-        msg = "Routes created successfully"
+        msg = "Routes to " + destination + " created successfully"
     return msg

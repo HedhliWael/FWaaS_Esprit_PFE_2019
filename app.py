@@ -2,7 +2,7 @@ import json
 import FortigateApi
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request
 import Fortigate_Requests
 from forms import LoginForm, NewCustomerWizardForm
 
@@ -76,6 +76,11 @@ def logout():
     return redirect(url_for('login'))
 
 
+@app.route("/result_nc_template", methods=['GET', 'POST'])
+def result():
+    return render_template('result.html', title='Contacting device')
+
+
 @app.route("/new", methods=['GET', 'POST'])
 def nc_add():
     return render_template('New_Customer.html', title='New Customer')
@@ -91,13 +96,14 @@ def nc_w_template():
     admin_name = str(form.vdom_name.data) + "_admin"
     fw = FortigateApi.Fortigate(FGT_Root, "root", "PFE", "pfepfe")
     fw_vdom = FortigateApi.Fortigate(FGT_Root, form.vdom_name.data, "PFE", "pfepfe")
-    ip_lan_mask = str(form.ip_adresse_lan.data) + " " + str(form.masque_lan)
+    ip_lan_mask = str(form.ip_adresse_lan.data) + " " + str(form.masque_lan.data)
     ip_lan_mask_2 = str(form.ip_adresse_lan.data) + "/24"
-    ip_wan_mask = str(form.ip_adresse_wan.data) + " " + str(form.masque_wan)
+    ip_wan_mask = str(form.ip_adresse_wan.data) + " " + str(form.masque_wan.data)
     rfc_1 = "10.0.0.0/8"
     rfc_2 = "172.16.0.0/12"
     rfc_3 = "192.168.0.0/16"
     ippool_name = str(form.vdom_name.data) + "_IPPool"
+    object_name = ip_lan_mask + "_LAN"
 
     """if form.vlan_id_lan.data:
         flash("data retrieved = " + form.vlan_id_lan.data)
@@ -107,20 +113,22 @@ def nc_w_template():
     if form.validate_on_submit():
         flash(Fortigate_Requests.Create_vdom_with_param(form.vdom_name.data, fw))
         flash(Fortigate_Requests.create_admin_local_profil(form.vdom_name.data, fw, admin_name, 'testtest'))
-        flash(Fortigate_Requests.create_and_associate_interface_vlan_to_vdom(form.vdom_name.data, fw, 'LAN', 'AGG',
-                                                                             form.vlan_id_lan.data,
-                                                                             ip_lan_mask, 'https ssh ping'))
-        flash(Fortigate_Requests.create_and_associate_interface_vlan_to_vdom(form.vdom_name.data, fw, 'WAN', 'AGG',
-                                                                             ip_wan_mask,
-                                                                             form.vlan_id_wan.data, 'https ssh ping'))
-        flash(Fortigate_Requests.create_adresse_object(fw_vdom, '192.168.1.254/24'))
+        flash(Fortigate_Requests.create_and_associate_interface_vlan_to_vdom(str(form.vdom_name.data), fw, 'LAN', 'AGG',
+                                                                             str(form.vlan_id_lan.data),
+                                                                             str(ip_lan_mask), 'https ssh ping'))
+
+        flash(Fortigate_Requests.create_and_associate_interface_vlan_to_vdom(str(form.vdom_name.data), fw, 'WAN', 'AGG',
+                                                                             str(form.vlan_id_wan.data),
+                                                                             str(ip_wan_mask), 'https ssh ping'))
+        flash(Fortigate_Requests.create_adresse_object(fw_vdom, str(ip_lan_mask_2), object_name))
         flash(Fortigate_Requests.create_ippool(fw_vdom, form.ip_publique.data, ippool_name, form.vdom_name.data))
         flash(Fortigate_Requests.create_route(fw_vdom, rfc_1, '10.10.10.254', 'LAN', 'auto-generated route'))
         flash(Fortigate_Requests.create_route(fw_vdom, rfc_2, '10.10.10.254', 'LAN', 'auto-generated route'))
         flash(Fortigate_Requests.create_route(fw_vdom, rfc_3, '10.10.10.254', 'LAN', 'auto-generated route'))
         flash(
             Fortigate_Requests.create_route(fw_vdom, '0.0.0.0 0.0.0.0', '20.20.20.254', 'WAN', 'auto-generated route'))
-        flash(Fortigate_Requests.create_policy(fw_vdom, 'LAN', 'WAN', ip_lan_mask, 'enable', 'enable', ippool_name,
+
+        flash(Fortigate_Requests.create_policy(fw_vdom, 'LAN', 'WAN', object_name, 'enable', 'enable', ippool_name,
                                                'auto-generated policy'))
 
     return render_template('wizard_Customer.html', title='Add Customer With Wizard', form=form)
