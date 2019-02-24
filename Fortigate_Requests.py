@@ -26,6 +26,9 @@ def c_vdom(vdom_name, Firewall_v2):
     else:
         Firewall_v2.AddVdom(vdom_name)
         msq = "Vdom " + str(vdom_name) + " created successfully"
+
+    print(vdom_name)
+    print(vdom_list)
     return msg
 
 
@@ -111,7 +114,7 @@ def c_policy(Firewall_v2_noprev, srcintf, dstintf, srcaddr, nat, ipool, poolname
 
 # Creating Routes
 
-def c_route(Firewall_v2_noprev, destination, gw, interface, comment):
+def c_route(selector, Firewall_v2_noprev, destination, gw, interface, comment):
     msg = ""
     route_list = []
     print('------------------------------------------------')
@@ -120,19 +123,38 @@ def c_route(Firewall_v2_noprev, destination, gw, interface, comment):
     print("GW param " + str(gw))
     print("Real GW " + str(gw_r))
     print("interface de sortie " + interface)
-
     json_resultat = json.loads(Firewall_v2_noprev.GetRouterStaticID())
     print(json_resultat)
-    for rt in json_resultat['results']:
-        route_list.append(rt['dst'])
-    print(route_list)
-    if destination in route_list:
-        msg = "Route Exist , skipping creating"
-    else:
-        Firewall_v2_noprev.AddRouterStatic(destination, interface, str(gw_r), comment)
-        msg = "Route " + destination + " created successfully"
+    if selector == 1:
+        for rt in json_resultat['results']:
+            route_list.append(rt['dst'])
+        print(route_list)
+        if destination in route_list:
+            msg = "Route Exist , skipping creating"
+        else:
+            Firewall_v2_noprev.AddRouterStatic(destination, interface, str(gw_r), comment)
+            msg = "Route " + destination + " created successfully"
 
-    return msg
+        return msg
+    else:
+        for rt in json_resultat['results']:
+            route_list.append(rt['dst'])
+        print(route_list)
+        if destination in route_list:
+            msg = "Route Exist , skipping creating"
+        else:
+            Firewall_v2_noprev.AddRouterStatic(destination, interface, str(gw), comment)
+            msg = "Route " + destination + " created successfully"
+
+        return msg
+
+
+def r_intrf_list(Firewall_v2_noprev):
+    json_resultat = json.loads(Firewall_v2_noprev.GetInterface())
+    interf_list = []
+    for interface in json_resultat:
+        interf_list.append(interface['name'])
+    return interf_list
 
 
 if __name__ == '__main__':

@@ -45,8 +45,8 @@
             <h5>Administrator login is needed to access the management plateform</h5>
             <p>&nbsp;</p>
 
-            <h3>Auto generated settings : </h3>
-            <blockquote><p>Newtork Objects : LAN and adresse object<br></p></blockquote>
+            <h3>Custom VDOM settings form : </h3>
+            <blockquote><p>Default selected VDOM : Root <br></p></blockquote>
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
@@ -65,9 +65,17 @@
                         <br>
                         {{ form.vdom_name.label() }}
                         {{ form.vdom_name() }}
-                        <br><br>
+                        <br>{{ form.submit_vdom (class_="formbutton") }}<br>
+                        <legend>Vdom Admin Settings</legend>
+                        {{ form.hidden_tag() }}
+                        {{ form.admin_username.label() }}
+                        {{ form.admin_username() }}
+                        <br>
+                        {{ form.admin_password.label() }}
+                        {{ form.admin_password() }}
+                        <br>{{ form.submit_admin (class_="formbutton") }}<br>
                         <legend>LAN settings</legend>
-                        <p>{{ form.intrf_nbr.label() }} {{ form.intrf_nbr() }} </p>
+                        <p>{{ form.intrf_lan_name.label() }} {{ form.intrf_lan_name() }} </p>
                         <br>
                         <table>
                             <tr>
@@ -87,7 +95,11 @@
                             </tr>
                         </table>
                         <br>
+                        {{ form.submit_lan(class_="formbutton") }}
+                        <br>
                         <legend>WAN settings</legend>
+                        <p>{{ form.intrf_wan_name.label() }} {{ form.intrf_wan_name() }} </p>
+
                         <br>
                         <table>
                             <tr>
@@ -106,11 +118,31 @@
                                 </th>
                             </tr>
                         </table>
+                        {{ form.submit_wan(class_="formbutton") }}
                         <br>
-                        <legend>{{ form.ip_publique.label() }}</legend>
-                        {{ form.ip_publique() }}<br>
+                        <legend>IP Publique</legend>
+                        {{ form.ip_publique_name.label() }} {{ form.ip_publique_name() }}<br>
+                        {{ form.ip_publique.label() }} {{ form.ip_publique() }}<br>
                         <br>
-                        {{ form.submit(class_="formbutton") }}
+                        {{ form.submit_pool(class_="formbutton") }}
+                        <legend>Static routes</legend>
+                        <table>
+                            <tr>
+                                <th>{{ form.destination.label() }}</th>
+                                <th>{{ form.gw.label() }}</th>
+                                <th>{{ form.dst_masque.label() }}</th>
+                                <th>{{ form.gw_intrf.label() }}</th>
+                            </tr>
+                            <tr>
+                                <th>{{ form.destination() }}</th>
+                                <th>{{ form.gw() }}</th>
+                                <th>{{ form.dst_masque() }}</th>
+                                <th>{{ form.gw_intrf() }}</th>
+                            </tr>
+                        </table>
+                        <br>
+                        {{ form.submit_route(class_="formbutton") }}
+                        <br><br>
                     </form>
                 {% endblock content %}
             </fieldset>

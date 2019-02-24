@@ -140,10 +140,10 @@ def nc_w_template():
 
         # Routes
 
-        flash(Fortigate_Requests.c_route(fw_vdom, rfc_1, ip_lan_mask_2, intrf_lan_name, 'auto-generated route'))
-        flash(Fortigate_Requests.c_route(fw_vdom, rfc_2, ip_lan_mask_2, intrf_lan_name, 'auto-generated route'))
-        flash(Fortigate_Requests.c_route(fw_vdom, rfc_3, ip_lan_mask_2, intrf_lan_name, 'auto-generated route'))
-        flash(Fortigate_Requests.c_route(fw_vdom, '0.0.0.0 0.0.0.0', ip_wan_mask_2, intrf_wan_name,
+        flash(Fortigate_Requests.c_route(1, fw_vdom, rfc_1, ip_lan_mask_2, intrf_lan_name, 'auto-generated route'))
+        flash(Fortigate_Requests.c_route(1, fw_vdom, rfc_2, ip_lan_mask_2, intrf_lan_name, 'auto-generated route'))
+        flash(Fortigate_Requests.c_route(1, fw_vdom, rfc_3, ip_lan_mask_2, intrf_lan_name, 'auto-generated route'))
+        flash(Fortigate_Requests.c_route(1, fw_vdom, '0.0.0.0 0.0.0.0', ip_wan_mask_2, intrf_wan_name,
                                          'auto-generated route'))
 
         # Policies
@@ -154,9 +154,46 @@ def nc_w_template():
     return render_template('wizard_Customer.html', title='Add Customer With Wizard', form=form)
 
 
-@app.route("/new/custom")
+@app.route("/new/custom", methods=['GET', 'POST'])
 def nc_customised():
+    # Declarations
     form = NewCustomerCustomForm()
+    form2 = NewCustomerWizardForm()
+    FGT_Root = "192.168.136.129"
+    FGT_Vdom = "192.168.1.83"
+    selected_vdom = "GCS_Corse"
+    Dest_masque = str(form.destination.data) + "/24"
+    fw = FortigateApi.Fortigate(FGT_Root, "root", "PFE", "pfepfe")
+    # fw_vdom = FortigateApi.Fortigate(FGT_Root, form.vdom_name.data, "PFE", "pfepfe")
+    fw_vdom = FortigateApi.Fortigate(FGT_Root, selected_vdom, "PFE", "pfepfe")
+    ip_lan_mask = str(form.ip_adresse_lan.data) + " " + str(form.masque_lan.data)
+    ip_wan_mask = str(form.ip_adresse_wan.data) + " " + str(form.masque_wan.data)
+
+    # GET POST
+
+    if form.submit_vdom.data:
+        flash(Fortigate_Requests.c_vdom(str(form.vdom_name.data), fw))
+    if form.submit_admin.data:
+        flash(Fortigate_Requests.c_admin(str(form.vdom_name.data), fw, str(form.admin_username.data),
+                                         str(form.admin_password.data)))
+    if form.submit_lan.data:
+        flash(Fortigate_Requests.c_intrf_vlan(str(form.vdom_name.data), fw, str(form.intrf_lan_name.data), 'AGG',
+                                              str(form.vlan_id_lan.data), str(ip_lan_mask),
+                                              allowed_access=" http ping ssh"))
+    if form.submit_wan.data:
+        flash(Fortigate_Requests.c_intrf_vlan(str(form.vdom_name.data), fw, str(form.intrf_wan_name.data), 'AGG',
+                                              str(form.vlan_id_wan.data), str(ip_wan_mask),
+                                              allowed_access=" http ping ssh"))
+    if form.submit_pool.data:
+        flash(Fortigate_Requests.c_ippool(fw_vdom, str(form.ip_publique), str(form.ip_publique_name),
+                                          str(form.vdom_name.object_data)))
+
+    form.gw_intrf.choices = [(intrf, intrf) for intrf in Fortigate_Requests.r_intrf_list(fw_vdom)]
+
+    if form.submit_route.data:
+        flash(Fortigate_Requests.c_route(2, fw_vdom, Dest_masque, str(form.gw.data), str(form.gw_intrf.data),
+                                         "Added from Custom Vdom Form"))
+
     return render_template('custom_Customer.html', title='add customer', form=form)
 
 
