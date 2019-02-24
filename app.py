@@ -4,7 +4,7 @@ from flask_login import UserMixin, login_user, LoginManager, current_user, logou
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash, request
 import Fortigate_Requests
-from forms import LoginForm, NewCustomerWizardForm
+from forms import LoginForm, NewCustomerWizardForm, NewCustomerCustomForm
 
 app = Flask(__name__)
 
@@ -98,45 +98,66 @@ def nc_w_template():
     fw_vdom = FortigateApi.Fortigate(FGT_Root, form.vdom_name.data, "PFE", "pfepfe")
     ip_lan_mask = str(form.ip_adresse_lan.data) + " " + str(form.masque_lan.data)
     ip_lan_mask_2 = str(form.ip_adresse_lan.data) + "/24"
+    ip_wan_mask_2 = str(form.ip_adresse_wan.data) + "/24"
     ip_wan_mask = str(form.ip_adresse_wan.data) + " " + str(form.masque_wan.data)
     rfc_1 = "10.0.0.0/8"
+    rfc_1_f = "10.0.0.0 255.0.0.0"
     rfc_2 = "172.16.0.0/12"
     rfc_3 = "192.168.0.0/16"
     ippool_name = str(form.vdom_name.data) + "_IPPool"
-    object_name = ip_lan_mask + "_LAN"
+    obj_name = ip_lan_mask + "_LAN"
+    intrf_lan_name = str(form.vdom_name.data) + "_LAN"
+    intrf_wan_name = str(form.vdom_name.data) + "_WAN"
 
-    """if form.vlan_id_lan.data:
-        flash("data retrieved = " + form.vlan_id_lan.data)
-    if form.https_access_lan.data:
-        flash('https access')"""
     # trucs
     if form.validate_on_submit():
-        flash(Fortigate_Requests.Create_vdom_with_param(form.vdom_name.data, fw))
-        flash(Fortigate_Requests.create_admin_local_profil(form.vdom_name.data, fw, admin_name, 'testtest'))
-        flash(Fortigate_Requests.create_and_associate_interface_vlan_to_vdom(str(form.vdom_name.data), fw, 'LAN', 'AGG',
-                                                                             str(form.vlan_id_lan.data),
-                                                                             str(ip_lan_mask), 'https ssh ping'))
+        # Vdom
 
-        flash(Fortigate_Requests.create_and_associate_interface_vlan_to_vdom(str(form.vdom_name.data), fw, 'WAN', 'AGG',
-                                                                             str(form.vlan_id_wan.data),
-                                                                             str(ip_wan_mask), 'https ssh ping'))
-        flash(Fortigate_Requests.create_adresse_object(fw_vdom, str(ip_lan_mask_2), object_name))
-        flash(Fortigate_Requests.create_ippool(fw_vdom, form.ip_publique.data, ippool_name, form.vdom_name.data))
-        flash(Fortigate_Requests.create_route(fw_vdom, rfc_1, '10.10.10.254', 'LAN', 'auto-generated route'))
-        flash(Fortigate_Requests.create_route(fw_vdom, rfc_2, '10.10.10.254', 'LAN', 'auto-generated route'))
-        flash(Fortigate_Requests.create_route(fw_vdom, rfc_3, '10.10.10.254', 'LAN', 'auto-generated route'))
-        flash(
-            Fortigate_Requests.create_route(fw_vdom, '0.0.0.0 0.0.0.0', '20.20.20.254', 'WAN', 'auto-generated route'))
+        flash(Fortigate_Requests.c_vdom(form.vdom_name.data, fw))
 
-        flash(Fortigate_Requests.create_policy(fw_vdom, 'LAN', 'WAN', object_name, 'enable', 'enable', ippool_name,
-                                               'auto-generated policy'))
+        # Admin profil
+
+        flash(Fortigate_Requests.c_admin(form.vdom_name.data, fw, admin_name, 'testtest'))
+
+        # Interfaces
+
+        flash(Fortigate_Requests.c_intrf_vlan(str(form.vdom_name.data), fw,
+                                              intrf_lan_name, 'AGG',
+                                              str(form.vlan_id_lan.data),
+                                              str(ip_lan_mask), 'https ssh ping'))
+
+        flash(Fortigate_Requests.c_intrf_vlan(str(form.vdom_name.data), fw,
+                                              intrf_wan_name, 'AGG',
+                                              str(form.vlan_id_wan.data),
+                                              str(ip_wan_mask), 'https ssh ping'))
+        # Address Object
+
+        flash(Fortigate_Requests.c_adr_obj(fw_vdom, str(ip_lan_mask_2), obj_name))
+
+        # IP Pool
+
+        flash(Fortigate_Requests.c_ippool(fw_vdom, form.ip_publique.data, ippool_name, form.vdom_name.data))
+
+        # Routes
+
+        flash(Fortigate_Requests.c_route(fw_vdom, rfc_1, ip_lan_mask_2, intrf_lan_name, 'auto-generated route'))
+        flash(Fortigate_Requests.c_route(fw_vdom, rfc_2, ip_lan_mask_2, intrf_lan_name, 'auto-generated route'))
+        flash(Fortigate_Requests.c_route(fw_vdom, rfc_3, ip_lan_mask_2, intrf_lan_name, 'auto-generated route'))
+        flash(Fortigate_Requests.c_route(fw_vdom, '0.0.0.0 0.0.0.0', ip_wan_mask_2, intrf_wan_name,
+                                         'auto-generated route'))
+
+        # Policies
+
+        flash(Fortigate_Requests.c_policy(fw_vdom, intrf_lan_name, intrf_wan_name, obj_name, 'enable', 'enable',
+                                          ippool_name, 'auto-generated policy'))
 
     return render_template('wizard_Customer.html', title='Add Customer With Wizard', form=form)
 
 
 @app.route("/new/custom")
 def nc_customised():
-    return render_template('custom_Customer.html', title='add customer')
+    form = NewCustomerCustomForm()
+    return render_template('custom_Customer.html', title='add customer', form=form)
 
 
 if __name__ == '__main__':

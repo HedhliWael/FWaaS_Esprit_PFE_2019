@@ -1261,6 +1261,34 @@ class Fortigate:
         req = self.ApiGet('monitor/firewall/policy')
         return req.text
 
+    def AddRouterStatic(self, dst, device, gateway, comment=''):
+        """
+        Create a static route on the firewall.
+
+        Parameters
+        ----------
+        dst: the destination, example '1.1.1.1 255.255.255.0' (type string)
+        device: (type string)
+        gateway: (type string)
+        comment: (type string)(default none)
+
+        Returns
+        -------
+        Http status code: 200 if ok, 4xx if an error occurs
+        """
+        dst = str(dst)
+        device = str(device)
+        gateway = str(gateway)
+        payload = {'json':
+            {
+                'dst': dst,
+                'device': device,
+                'gateway': gateway,
+                'comment': comment
+            }
+        }
+        return self.ApiAdd('cmdb/router/static/', payload)
+
     def AddFwPolicy(self, srcintf='any', dstintf='any', srcaddr='all', dstaddr='all', service='ALL', action='accept',
                     schedule='always', nat='disable', poolname='[]', ippool='disable', status='enable', comments='',
                     traffic_shaper='', traffic_shaper_reverse=''):
@@ -1278,7 +1306,7 @@ class Fortigate:
         #schedule: schedule (type string)(default always)
         #nat: nat, type choice string: enable or disable (type string)(default disable)
         #poolname: if you enabled nat, the poolname (type string)(default [])
-        #ippool: if you enabled nat, the  (type string)(default disable)
+        #ippool: if you enabled nat, the ippool (type string)(default disable)
         #status: the status of the policy, type choice string: enable or disable (default enable)
         #comment: (type string)
         #traffic_shaper: traffic shaper object name (type string)

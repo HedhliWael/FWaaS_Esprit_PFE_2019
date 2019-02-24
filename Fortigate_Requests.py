@@ -15,11 +15,11 @@ Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin
 
 # Create VDOM with param Vdom_Name
 
-def Create_vdom_with_param(vdom_name, Firewall_v2):
+def c_vdom(vdom_name, Firewall_v2):
     msg = ""
-    result = json.loads(Firewall_v2.GetVdom())
+    res = json.loads(Firewall_v2.GetVdom())
     vdom_list = []
-    for vdom in result['results']:
+    for vdom in res['results']:
         vdom_list.append(vdom['name'])
     if vdom_name in vdom_list:
         msq = "Vdom Exist ! "
@@ -31,14 +31,14 @@ def Create_vdom_with_param(vdom_name, Firewall_v2):
 
 # Create and associate Interfaces to VDOM with params
 
-def create_and_associate_interface_vlan_to_vdom(vdom_name, Firewall_v2, vlan, intrf_physique, vlan_id, ip,
-                                                allowed_access):
+def c_intrf_vlan(vdom_name, Firewall_v2, vlan, intrf_physique, vlan_id, ip,
+                 allowed_access):
     msg = ""
     json_resultat = json.loads(Firewall_v2.GetInterface())
-    interfaces_list = []
+    intfr_list = []
     for interface in json_resultat:
-        interfaces_list.append(interface['name'])
-    if vlan in interfaces_list:
+        intfr_list.append(interface['name'])
+    if vlan in intfr_list:
         msg = "Vlan " + vlan + " exist, skipping creation"
     else:
         msg = "creating interface " + vlan
@@ -47,7 +47,7 @@ def create_and_associate_interface_vlan_to_vdom(vdom_name, Firewall_v2, vlan, in
 
 
 # Create Local Admin
-def create_admin_local_profil(vdom_name, Firewall_v2, admin_name, password):
+def c_admin(vdom_name, Firewall_v2, admin_name, password):
     msg = ""
     admin_list = []
     json_resultat = json.loads(Firewall_v2.GetSystemAdmin())
@@ -68,7 +68,7 @@ def create_admin_local_profil(vdom_name, Firewall_v2, admin_name, password):
 ippool_name = vdom_name + "_IPPool"
 
 
-def create_ippool(Firewall_v2_noprev, ippool, ippool_name, vdom_name):
+def c_ippool(Firewall_v2_noprev, ippool, ippool_name, vdom_name):
     msg = ""
     ippool_list = []
     # ippool_name = vdom_name + "_IPPool"
@@ -84,7 +84,7 @@ def create_ippool(Firewall_v2_noprev, ippool, ippool_name, vdom_name):
 
 
 ## Adresse Objects
-def create_adresse_object(Firewall_v2_noprev, ip, object_name):
+def c_adr_obj(Firewall_v2_noprev, ip, object_name):
     json_resultat = json.loads(Firewall_v2_noprev.GetFwAddress())
 
     adrs_list = []
@@ -101,7 +101,7 @@ def create_adresse_object(Firewall_v2_noprev, ip, object_name):
 
 
 # Creating Policy LAN to Wan
-def create_policy(Firewall_v2_noprev, srcintf, dstintf, srcaddr, nat, ipool, poolname, comment):
+def c_policy(Firewall_v2_noprev, srcintf, dstintf, srcaddr, nat, ipool, poolname, comment):
     Firewall_v2_noprev.AddFwPolicy(srcintf=srcintf, dstintf=dstintf, srcaddr=srcaddr, nat=nat,
                                    ippool=ipool,
                                    poolname=poolname,
@@ -111,15 +111,31 @@ def create_policy(Firewall_v2_noprev, srcintf, dstintf, srcaddr, nat, ipool, poo
 
 # Creating Routes
 
-def create_route(Firewall_v2_noprev, destination, gw, interface, comment):
+def c_route(Firewall_v2_noprev, destination, gw, interface, comment):
     msg = ""
     route_list = []
+    print('------------------------------------------------')
+    gw_r = ipcalc.Network(gw).host_last()
+    print("route for " + destination)
+    print("GW param " + str(gw))
+    print("Real GW " + str(gw_r))
+    print("interface de sortie " + interface)
+
     json_resultat = json.loads(Firewall_v2_noprev.GetRouterStaticID())
+    print(json_resultat)
     for rt in json_resultat['results']:
         route_list.append(rt['dst'])
+    print(route_list)
     if destination in route_list:
         msg = "Route Exist , skipping creating"
     else:
-        Firewall_v2_noprev.AddRouterStatic(destination, interface, gw, comment)
-        msg = "Routes to " + destination + " created successfully"
+        Firewall_v2_noprev.AddRouterStatic(destination, interface, str(gw_r), comment)
+        msg = "Route " + destination + " created successfully"
+
     return msg
+
+
+if __name__ == '__main__':
+    vdom_name = "Veolia"
+    Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
+    print(c_route(Firewall_v2_noprev, '10.0.0.0/8', '100.255.255.200/24', 'Veolia_LAN', "test"))
