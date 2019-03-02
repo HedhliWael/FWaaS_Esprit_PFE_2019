@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, SelectMultipleField
 from wtforms.validators import DataRequired, IPAddress, length, number_range
 
 
@@ -31,7 +31,7 @@ class NewCustomerWizardForm(FlaskForm):
 class NewCustomerCustomForm(FlaskForm):
     # Vdom Form
     Customer_name = StringField('Customer name : ')
-    vdom_name = StringField('VDOM name : ')
+    vdom_name = StringField('VDOM name : ', default='GCS_Corse')
     submit_vdom = SubmitField('Add vdom')
 
     # Interfaces Form
@@ -69,4 +69,17 @@ class NewCustomerCustomForm(FlaskForm):
     gw_intrf = SelectField('Available interfaces', choices=[('lan1', 'lan1'), ('lan2', 'lan2')])
     submit_route = SubmitField('Add route')
 
-    submit_policy = SubmitField('Add policy')
+    # Adresse object
+    ojbct_adr = StringField('Adresse object (adresse/mask : ')
+    adr_name = StringField('Adresse Object Name : ')
+    submit_obj = SubmitField('Add Object')
+
+    # Policies
+    src_intrf = SelectField('Available interfaces', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
+    src_adr = SelectMultipleField('Source Adresse/group', choices=[('lan1_src', 'lan1_src')])
+    dst_adr = SelectMultipleField('Destination Adresse/group', choices=[('lan1_src', 'lan1_src')])
+    services = SelectMultipleField('Services', choices=[('lan1_src', 'lan1_src')])
+    dst_intrf = SelectField('Available interfaces', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
+    nat = SelectField('Addresse Translation', choices=[('disabled', 'disabled')])
+    action = SelectField('Action', choices=[('permit', 'permit'), ('deny', 'deny')])
+    submit_pol = SubmitField('Add Policy')

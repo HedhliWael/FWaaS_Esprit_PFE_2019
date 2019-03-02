@@ -11,6 +11,7 @@ FGT_Vdom = "192.168.1.83"
 vdom_name = 'Vdom_3'
 Firewall_v2 = FortigateApi.Fortigate(FGT_Root, "root", "admin", "admin")
 Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
+Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin", vdom=vdom_name)
 
 
 # Create VDOM with param Vdom_Name
@@ -149,7 +150,7 @@ def c_route(selector, Firewall_v2_noprev, destination, gw, interface, comment):
         return msg
 
 
-def r_intrf_list(Firewall_v2_noprev):
+def g_intrf_list(Firewall_v2_noprev):
     json_resultat = json.loads(Firewall_v2_noprev.GetInterface())
     interf_list = []
     for interface in json_resultat:
@@ -157,7 +158,33 @@ def r_intrf_list(Firewall_v2_noprev):
     return interf_list
 
 
+def g_srv_list(Firewall_v2_api2):
+    json_resultat = Firewall_v2_api2.get_service_group()
+    srv_list = []
+    for srv in json_resultat:
+        srv_list.append(srv['name'])
+    return srv_list
+
+
+def g_adr_list(Firewall_v2_api2):
+    json_resultat = Firewall_v2_api2.get_firewall_address()
+    adr_list = []
+    for adr in json_resultat:
+        adr_list.append(adr['name'])
+    return adr_list
+
+
+def g_ippool_list(Firewall_v2_noprev):
+    ippool_list = []
+    json_resultat = json.loads(Firewall_v2_noprev.GetFwIPpool())
+    for ip in json_resultat['results']:
+        ippool_list.append(ip['name'])
+    return ippool_list
+
+
 if __name__ == '__main__':
     vdom_name = "Veolia"
     Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
-    print(c_route(Firewall_v2_noprev, '10.0.0.0/8', '100.255.255.200/24', 'Veolia_LAN', "test"))
+    Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin", vdom=vdom_name)
+
+    print(g_ippool_list(Firewall_v2_noprev))

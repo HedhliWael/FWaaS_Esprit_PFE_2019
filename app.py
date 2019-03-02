@@ -1,5 +1,5 @@
 import json
-import FortigateApi
+import FortigateApi, pyfortiapi
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash, request
@@ -161,11 +161,14 @@ def nc_customised():
     form2 = NewCustomerWizardForm()
     FGT_Root = "192.168.136.129"
     FGT_Vdom = "192.168.1.83"
-    selected_vdom = "GCS_Corse"
+    selected_vdom = "root"
     Dest_masque = str(form.destination.data) + "/24"
     fw = FortigateApi.Fortigate(FGT_Root, "root", "PFE", "pfepfe")
-    # fw_vdom = FortigateApi.Fortigate(FGT_Root, form.vdom_name.data, "PFE", "pfepfe")
-    fw_vdom = FortigateApi.Fortigate(FGT_Root, selected_vdom, "PFE", "pfepfe")
+    fw_vdom = FortigateApi.Fortigate(FGT_Root, str(form.vdom_name.data), "PFE", "pfepfe")
+    Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin",
+                                            vdom=str(form.vdom_name.data))
+
+    # fw_vdom = FortigateApi.Fortigate(FGT_Root, selected_vdom, "PFE", "pfepfe")
     ip_lan_mask = str(form.ip_adresse_lan.data) + " " + str(form.masque_lan.data)
     ip_wan_mask = str(form.ip_adresse_wan.data) + " " + str(form.masque_wan.data)
 
@@ -188,11 +191,21 @@ def nc_customised():
         flash(Fortigate_Requests.c_ippool(fw_vdom, str(form.ip_publique), str(form.ip_publique_name),
                                           str(form.vdom_name.object_data)))
 
-    form.gw_intrf.choices = [(intrf, intrf) for intrf in Fortigate_Requests.r_intrf_list(fw_vdom)]
+    form.gw_intrf.choices = [(intrf, intrf) for intrf in Fortigate_Requests.g_intrf_list(fw_vdom)]
 
     if form.submit_route.data:
         flash(Fortigate_Requests.c_route(2, fw_vdom, Dest_masque, str(form.gw.data), str(form.gw_intrf.data),
                                          "Added from Custom Vdom Form"))
+
+    form.src_intrf.choices = [(intrf, intrf) for intrf in Fortigate_Requests.g_intrf_list(fw_vdom)]
+    form.dst_intrf.choices = [(intrf, intrf) for intrf in Fortigate_Requests.g_intrf_list(fw_vdom)]
+    form.src_adr.choices = [(adr, adr) for adr in Fortigate_Requests.g_adr_list(Firewall_v2_api2)]
+    form.dst_adr.choices = [(adr, adr) for adr in Fortigate_Requests.g_adr_list(Firewall_v2_api2)]
+    form.services.choices = [(srv, srv) for srv in Fortigate_Requests.g_srv_list(Firewall_v2_api2)]
+    form.nat.choices = [(pool, pool) for pool in Fortigate_Requests.g_ippool_list(fw_vdom)]
+
+    """if form.submit_pol.data:
+        flash(Fortigate_Requests.c_policy(FGT_Vdom, str(form.src_intrf.data), str(form.dst_intrf.data),str(form.src_adr.data),))"""
 
     return render_template('custom_Customer.html', title='add customer', form=form)
 

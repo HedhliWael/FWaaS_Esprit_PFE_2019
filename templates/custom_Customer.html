@@ -46,7 +46,15 @@
             <p>&nbsp;</p>
 
             <h3>Custom VDOM settings form : </h3>
-            <blockquote><p>Default selected VDOM : Root <br></p></blockquote>
+            <blockquote>
+                <p>Selected VDOM :
+                    {% if not form.vdom_name.data %}
+                        Root
+                    {% else %}
+                        {{ form.vdom_name.data }}
+                    {% endif %}
+                    <br>
+            </blockquote>
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
@@ -125,6 +133,11 @@
                         {{ form.ip_publique.label() }} {{ form.ip_publique() }}<br>
                         <br>
                         {{ form.submit_pool(class_="formbutton") }}
+                        <legend>Adresse Object</legend>
+                        {{ form.adr_name.label() }} {{ form.adr_name() }}<br>
+                        {{ form.ojbct_adr.label() }} {{ form.ojbct_adr() }}<br>
+                        <br>
+                        {{ form.submit_obj(class_="formbutton") }}
                         <legend>Static routes</legend>
                         <table>
                             <tr>
@@ -142,6 +155,30 @@
                         </table>
                         <br>
                         {{ form.submit_route(class_="formbutton") }}
+                        <br><br>
+                        <legend>Policies</legend>
+                        <table>
+                            <tr>
+                                <th>{{ form.src_intrf.label() }}</th>
+                                <th>{{ form.src_adr.label() }}</th>
+                                <th>{{ form.dst_intrf.label() }}</th>
+                                <th>{{ form.dst_adr.label() }}</th>
+                                <th>{{ form.services.label() }}</th>
+                                <th>{{ form.nat.label() }}</th>
+                                <th>{{ form.action.label() }}</th>
+                            </tr>
+                            <tr>
+                                <th>{{ form.src_intrf() }}</th>
+                                <th>{{ form.src_adr() }}</th>
+                                <th>{{ form.dst_intrf() }}</th>
+                                <th>{{ form.dst_adr() }}</th>
+                                <th>{{ form.services() }}</th>
+                                <th>{{ form.nat() }}</th>
+                                <th>{{ form.action() }}</th>
+                            </tr>
+                        </table>
+                        <br>
+                        {{ form.submit_pol(class_="formbutton") }}
                         <br><br>
                     </form>
                 {% endblock content %}
