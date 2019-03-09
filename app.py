@@ -204,11 +204,34 @@ def nc_customised():
     form.services.choices = [(srv, srv) for srv in Fortigate_Requests.g_srv_list(Firewall_v2_api2)]
     form.nat.choices = [(pool, pool) for pool in Fortigate_Requests.g_ippool_list(fw_vdom)]
 
-    """if form.submit_pol.data:
-        flash(Fortigate_Requests.c_policy(FGT_Vdom, str(form.src_intrf.data), str(form.dst_intrf.data),str(form.src_adr.data),))"""
+    if form.submit_obj.data:
+        flash(Fortigate_Requests.c_adr_obj(fw_vdom, str(form.ojbct_adr.data), str(form.adr_name.data)))
+
+    if form.submit_pol.data:
+        print(form.nat_option.data)
+        print(form.nat.data)
+        print(form.src_intrf.data)
+        print(form.src_adr.data[0])
+        print(form.services.data[0])
+        print(form.dst_intrf.data)
+        print(form.dst_adr.data[0])
+        if form.nat_option.data:
+            flash(Fortigate_Requests.c_policy(fw_vdom, srcintf=str(form.src_intrf.data),
+                                              dstintf=str(form.dst_intrf.data),
+                                              srcaddr=str(form.src_adr.data[0]), dstaddr=str(form.dst_adr.data[0]),
+                                              services=str(form.services.data[0]),
+                                              nat='enable', ipool='enable',
+                                              poolname=str(form.nat.data), comment='added from flask app'))
+        else:
+            flash(Fortigate_Requests.c_policy(fw_vdom, srcintf=str(form.src_intrf.data),
+                                              dstintf=str(form.dst_intrf.data),
+                                              srcaddr=str(form.src_adr.data[0]), dstaddr=str(form.dst_adr.data[0]),
+                                              ipool='disable'
+                                              , poolname='[]', services=str(form.services.data[0]),
+                                              nat='disable', comment='added from flask app'))
 
     return render_template('custom_Customer.html', title='add customer', form=form)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
