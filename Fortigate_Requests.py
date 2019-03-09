@@ -105,10 +105,10 @@ def c_adr_obj(Firewall_v2_noprev, ip, object_name):
 
 
 # Creating Policy LAN to Wan
-def c_policy(Firewall_v2_noprev, srcintf, dstintf, srcaddr, nat, ipool, poolname, comment):
+def c_policy(Firewall_v2_noprev, srcintf, dstintf, srcaddr, dstaddr, services, nat, ipool, poolname, comment):
     Firewall_v2_noprev.AddFwPolicy(srcintf=srcintf, dstintf=dstintf, srcaddr=srcaddr, nat=nat,
                                    ippool=ipool,
-                                   poolname=poolname,
+                                   poolname=poolname, dstaddr=dstaddr, service=services,
                                    comments=comment)
     return "Policy Created successfully"
 
@@ -182,9 +182,13 @@ def g_ippool_list(Firewall_v2_noprev):
     return ippool_list
 
 
+def g_policy_id(Firewall_v2_noprev, id):
+    return Firewall_v2_noprev.GetFwPolicyID(id=str(id))
+
+
 if __name__ == '__main__':
-    vdom_name = "Veolia"
+    vdom_name = "GCS_Corse"
     Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
     Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin", vdom=vdom_name)
 
-    print(g_ippool_list(Firewall_v2_noprev))
+    print(g_policy_id(Firewall_v2_noprev, 4))

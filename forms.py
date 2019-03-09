@@ -81,5 +81,6 @@ class NewCustomerCustomForm(FlaskForm):
     services = SelectMultipleField('Services', choices=[('lan1_src', 'lan1_src')])
     dst_intrf = SelectField('Available interfaces', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
     nat = SelectField('Addresse Translation', choices=[('disabled', 'disabled')])
+    nat_option = BooleanField(label='Nat')
     action = SelectField('Action', choices=[('permit', 'permit'), ('deny', 'deny')])
     submit_pol = SubmitField('Add Policy')
