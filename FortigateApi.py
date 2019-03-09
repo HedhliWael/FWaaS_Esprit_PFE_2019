@@ -1368,6 +1368,88 @@ class Fortigate:
         }
         return self.ApiAdd('cmdb/firewall/policy/', payload)
 
+    def AddFwPolicy_2(self, policyid, srcintf='any', dstintf='any', srcaddr='all', dstaddr='all', service='ALL',
+                      action='accept',
+                      schedule='always', nat='disable', poolname='[]', ippool='disable', status='enable', comments='',
+                      traffic_shaper='', traffic_shaper_reverse=''):
+        """
+        Create a fw policy.
+
+        Parameters
+        ----------
+        #srcintf: source interface (type string)(default any)
+        #dstintf: destination interface (type string)(default any)
+        #srcaddr: source address (type string)(default any)
+        #dstaddr: destination address (type string)(default any)
+        #service: service (type string)(default ALL)
+        #action: action, type choice string: accept or deny or drop (type string)(default accept)
+        #schedule: schedule (type string)(default always)
+        #nat: nat, type choice string: enable or disable (type string)(default disable)
+        #poolname: if you enabled nat, the poolname (type string)(default [])
+        #ippool: if you enabled nat, the ippool (type string)(default disable)
+        #status: the status of the policy, type choice string: enable or disable (default enable)
+        #comment: (type string)
+        #traffic_shaper: traffic shaper object name (type string)
+        #traffic_shaper_reverse: traffic shaper object name (type string)
+
+        Returns
+        -------
+        Http status code: 200 if ok, 4xx if an error occurs
+        """
+        policyid = str(policyid)
+        srcintf = str(srcintf)
+        dstintf = str(dstintf)
+        srcaddr = str(srcaddr)
+        dstaddr = str(dstaddr)
+        service = str(service)
+        action = str(action)
+
+        payload = {'json':
+            {
+                'srcintf': [
+                    {
+                        'name': srcintf
+                    }
+                ],
+                'dstintf': [
+                    {
+                        'name': dstintf
+                    }
+                ],
+                'srcaddr': [
+                    {
+                        'name': srcaddr
+                    }
+                ],
+                'dstaddr': [
+                    {
+                        'name': dstaddr
+                    }
+                ],
+                'action': action,
+                'schedule': schedule,
+                'nat': nat,
+                'status': status,
+                'nat': nat,
+                'ippool': ippool,
+                'traffic-shaper': traffic_shaper,
+                'traffic-shaper-reverse': traffic_shaper_reverse,
+                'poolname': [
+                    {
+                        'name': poolname
+                    }
+                ],
+                'service': [
+                    {
+                        'name': service
+                    }
+                ],
+                'comments': comments
+            }
+        }
+        return self.ApiAdd('cmdb/firewall/policy/', payload)
+
+
     def AddFwPolicyIdempotent(self, srcintf='any', dstintf='any', srcaddr='all', dstaddr='all', service='ALL',
                               action='accept', schedule='always', nat='disable', poolname='[]', ippool='disable',
                               status='enable', comments='', traffic_shaper='', traffic_shaper_reverse=''):
