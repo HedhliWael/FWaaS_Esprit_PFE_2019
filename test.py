@@ -14,8 +14,9 @@ def gen_json_data(src_addr, obj_list, key):
     return json.dumps(data)
 
 
-def multi_dest(src_addr, obj_list):
+def mutli_element(obj_list):
     data_list = []
+    src_addr = {}
     for obj in obj_list:
         src_addr['name'] = obj
         data_list.append(src_addr)
@@ -28,17 +29,17 @@ if __name__ == '__main__':
     data_list = []
     src_addr = {}
     print(gen_json_data(src_addr, obj_list, key='srcaddr'))
-    srcintf = multi_dest(src_addr, obj_list)
-    dstintf = multi_dest(src_addr, obj_list)
-    srcaddr = multi_dest(src_addr, obj_list)
-    dstaddr = multi_dest(src_addr, obj_list)
-
+    srcintf = mutli_element(obj_list)
+    dstintf = mutli_element(obj_list)
+    srcaddr = mutli_element(obj_list)
+    dstaddr = mutli_element(obj_list)
+    srvc = mutli_element(obj_list)
     payload = {'json':
         {
-            'srcintf': srcintf,
-            'dstintf': dstintf,
-            'srcaddr': srcaddr,
-            'dstaddr': dstaddr,
+            'srcintf': str(srcintf),
+            'dstintf': str(dstintf),
+            'srcaddr': str(srcaddr),
+            'dstaddr': str(dstaddr),
             'action': 'permit',
             'schedule': 'schedule',
             'nat': 'nat',
@@ -52,11 +53,7 @@ if __name__ == '__main__':
                     'name': 'poolname'
                 }
             ],
-            'service': [
-                {
-                    'name': 'service'
-                }
-            ],
+            'service': srvc,
             'comments': 'comments'
         }
     }

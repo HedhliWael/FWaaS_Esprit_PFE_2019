@@ -21,6 +21,8 @@ import requests, json
 # suppression du warning lors de la cnx https avec certi autosigne
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
+from test import mutli_element
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
@@ -1368,7 +1370,7 @@ class Fortigate:
         }
         return self.ApiAdd('cmdb/firewall/policy/', payload)
 
-    def AddFwPolicy_2(self, policyid, srcintf='any', dstintf='any', srcaddr='all', dstaddr='all', service='ALL',
+    def AddFwPolicy_m(self, srcintf='any', dstintf='any', srcaddr=['all'], dstaddr=['all'], service=['ALL'],
                       action='accept',
                       schedule='always', nat='disable', poolname='[]', ippool='disable', status='enable', comments='',
                       traffic_shaper='', traffic_shaper_reverse=''):
@@ -1396,36 +1398,27 @@ class Fortigate:
         -------
         Http status code: 200 if ok, 4xx if an error occurs
         """
-        policyid = str(policyid)
+        # policyid = str(policyid)
         srcintf = str(srcintf)
         dstintf = str(dstintf)
-        srcaddr = str(srcaddr)
-        dstaddr = str(dstaddr)
-        service = str(service)
+        srcaddr = mutli_element(srcaddr)
+        dstaddr = mutli_element(dstaddr)
+        service = mutli_element(service)
         action = str(action)
 
         payload = {'json':
-            {
-                'srcintf': [
-                    {
-                        'name': srcintf
-                    }
-                ],
+            {'srcintf': [
+                {
+                    'name': str(srcintf)
+                }
+            ],
                 'dstintf': [
                     {
-                        'name': dstintf
+                        'name': str(dstintf)
                     }
                 ],
-                'srcaddr': [
-                    {
-                        'name': srcaddr
-                    }
-                ],
-                'dstaddr': [
-                    {
-                        'name': dstaddr
-                    }
-                ],
+                'srcaddr': str(srcaddr),
+                'dstaddr': str(dstaddr),
                 'action': action,
                 'schedule': schedule,
                 'nat': nat,
@@ -1439,16 +1432,12 @@ class Fortigate:
                         'name': poolname
                     }
                 ],
-                'service': [
-                    {
-                        'name': service
-                    }
-                ],
+                'service': service,
                 'comments': comments
             }
         }
+        print(payload)
         return self.ApiAdd('cmdb/firewall/policy/', payload)
-
 
     def AddFwPolicyIdempotent(self, srcintf='any', dstintf='any', srcaddr='all', dstaddr='all', service='ALL',
                               action='accept', schedule='always', nat='disable', poolname='[]', ippool='disable',

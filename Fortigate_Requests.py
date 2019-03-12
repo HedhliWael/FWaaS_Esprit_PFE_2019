@@ -7,8 +7,8 @@ import pyfortiapi
 ###############################################
 FGT_Root = "192.168.136.129"
 FGT_Vdom = "192.168.1.83"
-
 vdom_name = 'Vdom_3'
+
 Firewall_v2 = FortigateApi.Fortigate(FGT_Root, "root", "admin", "admin")
 Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
 Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin", vdom=vdom_name)
@@ -105,11 +105,21 @@ def c_adr_obj(Firewall_v2_noprev, ip, object_name):
 
 
 # Creating Policy LAN to Wan
-def c_policy(Firewall_v2_noprev, srcintf, dstintf, srcaddr, dstaddr, services, nat, ipool, poolname, comment):
+def c_policy(Firewall_v2_noprev, srcintf, dstintf, srcaddr, dstaddr, services, nat, ipool,
+             poolname, comment):
     Firewall_v2_noprev.AddFwPolicy(srcintf=srcintf, dstintf=dstintf, srcaddr=srcaddr, nat=nat,
                                    ippool=ipool,
                                    poolname=poolname, dstaddr=dstaddr, service=services,
                                    comments=comment)
+    return "Policy Created successfully"
+
+
+def c_policy_m(Firewall_v2_noprev, srcintf, dstintf, srcaddr, dstaddr, services, nat, ipool,
+               poolname, comment):
+    Firewall_v2_noprev.AddFwPolicy_m(srcintf=srcintf, dstintf=dstintf, srcaddr=srcaddr, nat=nat,
+                                     ippool=ipool,
+                                     poolname=poolname, dstaddr=dstaddr, service=services,
+                                     comments=comment)
     return "Policy Created successfully"
 
 
@@ -148,6 +158,16 @@ def c_route(selector, Firewall_v2_noprev, destination, gw, interface, comment):
             msg = "Route " + destination + " created successfully"
 
         return msg
+
+
+def gen_dec(obj_list):
+    data_list = []
+    src_addr = {}
+    for obj in obj_list:
+        src_addr["name"] = obj
+        data_list.append(src_addr)
+        src_addr = {}
+    return data_list
 
 
 def g_intrf_list(Firewall_v2_noprev):
@@ -191,4 +211,4 @@ if __name__ == '__main__':
     Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
     Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin", vdom=vdom_name)
 
-    print(g_policy_id(Firewall_v2_noprev, 4))
+    print(g_policy_id(Firewall_v2_noprev, 1))

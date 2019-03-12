@@ -148,8 +148,10 @@ def nc_w_template():
 
         # Policies
 
-        flash(Fortigate_Requests.c_policy(fw_vdom, intrf_lan_name, intrf_wan_name, obj_name, 'enable', 'enable',
-                                          ippool_name, 'auto-generated policy'))
+        flash(Fortigate_Requests.c_policy(fw_vdom, srcintf=intrf_lan_name, dstaddr='all', services='ALL',
+                                          dstintf=intrf_wan_name, srcaddr=obj_name,
+                                          nat='enable', ipool='enable',
+                                          poolname=ippool_name, comment='auto-generated policy'))
 
     return render_template('wizard_Customer.html', title='Add Customer With Wizard', form=form)
 
@@ -188,8 +190,8 @@ def nc_customised():
                                               str(form.vlan_id_wan.data), str(ip_wan_mask),
                                               allowed_access=" http ping ssh"))
     if form.submit_pool.data:
-        flash(Fortigate_Requests.c_ippool(fw_vdom, str(form.ip_publique), str(form.ip_publique_name),
-                                          str(form.vdom_name.object_data)))
+        flash(Fortigate_Requests.c_ippool(fw_vdom, str(form.ip_publique.data), str(form.ip_publique_name.data),
+                                          str(form.vdom_name.data)))
 
     form.gw_intrf.choices = [(intrf, intrf) for intrf in Fortigate_Requests.g_intrf_list(fw_vdom)]
 
@@ -208,13 +210,15 @@ def nc_customised():
         flash(Fortigate_Requests.c_adr_obj(fw_vdom, str(form.ojbct_adr.data), str(form.adr_name.data)))
 
     if form.submit_pol.data:
+
         print(form.nat_option.data)
         print(form.nat.data)
         print(form.src_intrf.data)
-        print(form.src_adr.data[0])
-        print(form.services.data[0])
+        print(form.src_adr.data)
+        print(form.services.data)
         print(form.dst_intrf.data)
-        print(form.dst_adr.data[0])
+        print(form.dst_adr.data)
+        id = 15
         if form.nat_option.data:
             flash(Fortigate_Requests.c_policy(fw_vdom, srcintf=str(form.src_intrf.data),
                                               dstintf=str(form.dst_intrf.data),
@@ -222,6 +226,12 @@ def nc_customised():
                                               services=str(form.services.data[0]),
                                               nat='enable', ipool='enable',
                                               poolname=str(form.nat.data), comment='added from flask app'))
+            """flash(Fortigate_Requests.c_policy_m(fw_vdom,  srcintf=str(form.src_intrf.data),
+                                              dstintf=str(form.dst_intrf.data),
+                                              srcaddr=form.src_adr.data, dstaddr=form.dst_adr.data,
+                                              services=form.services.data,
+                                              nat='enable', ipool='enable',
+                                              poolname=str(form.nat.data), comment='added from flask app'))"""
         else:
             flash(Fortigate_Requests.c_policy(fw_vdom, srcintf=str(form.src_intrf.data),
                                               dstintf=str(form.dst_intrf.data),
@@ -229,6 +239,12 @@ def nc_customised():
                                               ipool='disable'
                                               , poolname='[]', services=str(form.services.data[0]),
                                               nat='disable', comment='added from flask app'))
+            """flash(Fortigate_Requests.c_policy_m(fw_vdom,  srcintf=str(form.src_intrf.data),
+                                              dstintf=str(form.dst_intrf.data),
+                                              srcaddr=form.src_adr.data, dstaddr=form.dst_adr.data,
+                                              ipool='disable'
+                                              , poolname='[]', services=form.services.data,
+                                              nat='disable', comment='added from flask app'))"""
 
     return render_template('custom_Customer.html', title='add customer', form=form)
 
