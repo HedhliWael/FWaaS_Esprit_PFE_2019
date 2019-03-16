@@ -93,17 +93,19 @@ class AddCustomerVDOM(FlaskForm):
 
 
 class AddAdminVDOM(FlaskForm):
-    vdom_list = SelectField('La liste de VDOM', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
+    vdom_list = SelectField('La liste de VDOM', choices=[('echec_de_connexion', 'echec_de_connexion'),
+                                                         ('echec_de_connexion', 'echec_de_connexion')])
     admin_username = StringField('Nom admin ', validators=[length(min=5, max=12), DataRequired()])
     admin_password = PasswordField('Mot de passe', validators=[DataRequired()])
     submit_admin = SubmitField('Add Admin local')
 
 
 class AddVdomInterface(FlaskForm):
-    vdom_list = SelectField('La liste de VDOM', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
-    intrf_lan_name = StringField("Nom de l'interface : ")
-    vlan_id_lan = StringField('VLAN ID ')
-    ip_adresse_lan = StringField(" l'adresse : ")
+    vdom_list = SelectField('La liste de VDOM', choices=[('echec_de_connexion', 'echec_de_connexion'),
+                                                         ('echec_de_connexion', 'echec_de_connexion')])
+    intrf_lan_name = StringField("Nom de l'interface : ", validators=[length(min=5, max=12), DataRequired()])
+    vlan_id_lan = StringField('VLAN ID ', validators=[length(min=5, max=12), DataRequired()])
+    ip_adresse_lan = StringField(" l'adresse : ", validators=[IPAddress(ipv4=True), DataRequired()])
     masque_lan = StringField("Masque : ")
     ssh_access_lan = BooleanField()
     https_access_lan = BooleanField()
@@ -112,7 +114,26 @@ class AddVdomInterface(FlaskForm):
 
 
 class AddVdomIPPool(FlaskForm):
-    vdom_list = SelectField('La liste de VDOM', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
-    ip_publique = StringField('Pool Adresse : ')
-    ip_publique_name = StringField("Nom d'objet IPPool : ")
+    vdom_list = SelectField('La liste de VDOM', choices=[('echec_de_connexion', 'echec_de_connexion'),
+                                                         ('echec_de_connexion', 'echec_de_connexion')])
+    ip_publique = StringField('Pool Adresse : ', validators=[length(min=5, max=12), DataRequired()])
+    ip_publique_name = StringField("Nom d'objet IPPool : ", validators=[length(min=5, max=12), DataRequired()])
     submit_pool = SubmitField('Ajouter IPPool')
+
+
+class AddVdomObject(FlaskForm):
+    vdom_list = SelectField('La liste de VDOM', choices=[('echec_de_connexion', 'echec_de_connexion'),
+                                                         ('echec_de_connexion', 'echec_de_connexion')])
+    ojbct_adr = StringField('Objet IP (adresse/masque) : ', validators=[length(min=5, max=12), DataRequired()])
+    adr_name = StringField("Nom de l'objet IP : ", validators=[length(min=5, max=12), DataRequired()])
+    submit_obj = SubmitField("Ajouter objet")
+
+
+class AddVdomRoute(FlaskForm):
+    vdom_list = SelectField('La liste de VDOM', choices=[('echec_de_connexion', 'echec_de_connexion'),
+                                                         ('echec_de_connexion', 'echec_de_connexion')])
+    destination = StringField('Destination', validators=[IPAddress(ipv4=True)])
+    dst_masque = StringField('Masque', validators=[IPAddress(ipv4=True)])
+    gw = StringField('Passerrelle', validators=[IPAddress(ipv4=True)])
+    gw_intrf = SelectField('Available interfaces', choices=[('lan1', 'lan1'), ('lan2', 'lan2')])
+    submit_route = SubmitField('Add route')

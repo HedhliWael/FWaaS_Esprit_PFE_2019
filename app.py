@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash, request
 import Fortigate_Requests
 from forms import LoginForm, NewCustomerWizardForm, NewCustomerCustomForm, AddCustomerVDOM, AddAdminVDOM, \
-    AddVdomInterface, AddVdomIPPool
+    AddVdomInterface, AddVdomIPPool, AddVdomObject, AddVdomRoute
 
 app = Flask(__name__)
 
@@ -128,25 +128,36 @@ def nc_customised_interface():
 def nc_customised_ippool():
     form = AddVdomIPPool()
     ip_fgt = "192.168.136.129"
-    fortigate = FortigateApi.Fortigate(ip_fgt, "root", "PFE", "pfepfe")
+    fortigate = FortigateApi.Fortigate(ip_fgt, 'root', "PFE", "pfepfe")
     form.vdom_list.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate)]
     if form.submit_pool.data:
-        print(form.ip_publique.data)
-        print(form.ip_publique_name.data)
-        flash(Fortigate_Requests.c_ippool(fortigate, str(form.ip_publique.data), str(form.ip_publique_name.data),
+        fortigate_vdom = FortigateApi.Fortigate(ip_fgt, str(form.vdom_list.data), "PFE", "pfepfe")
+        flash(Fortigate_Requests.c_ippool(fortigate_vdom, str(form.ip_publique.data), str(form.ip_publique_name.data),
                                           str(form.vdom_list.data)))
     return render_template('Add_Vdom_IPPool.html', title='Ajouter IP Pool', form=form)
 
 
 @app.route("/new/custom/objet", methods=['GET', 'POST'])
 def nc_customised_object():
-    form = NewCustomerCustomForm()
+    form = AddVdomObject()
+    ip_fgt = "192.168.136.129"
+    fortigate = FortigateApi.Fortigate(ip_fgt, 'root', "PFE", "pfepfe")
+    form.vdom_list.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate)]
+    if form.submit_obj.data:
+        fortigate_vdom = FortigateApi.Fortigate(ip_fgt, str(form.vdom_list.data), "PFE", "pfepfe")
+        flash(Fortigate_Requests.c_adr_obj(fortigate_vdom, str(form.ojbct_adr.data), str(form.adr_name.data)))
+
     return render_template('Add_Vdom_Objet.html', title='Ajouter Objet IP', form=form)
 
 
 @app.route("/new/custom/route", methods=['GET', 'POST'])
 def nc_customised_route():
-    form = NewCustomerCustomForm()
+    form = AddVdomRoute()
+    ip_fgt = "192.168.136.129"
+    fortigate_vdom = FortigateApi.Fortigate(ip_fgt, str(form.vdom_list.data), "PFE", "pfepfe")
+    if form.vdom_list.data:
+        form.vdom_list.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate_vdom)]
+
     return render_template('Add_Vdom_Route.html', title='Ajouter Route', form=form)
 
 
