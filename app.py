@@ -4,12 +4,13 @@ from flask_login import UserMixin, login_user, LoginManager, current_user, logou
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash, request
 import Fortigate_Requests
-from forms import LoginForm, NewCustomerWizardForm, NewCustomerCustomForm
+from forms import LoginForm, NewCustomerWizardForm, NewCustomerCustomForm, AddCustomerVDOM, AddAdminVDOM, \
+    AddVdomInterface, AddVdomIPPool
 
 app = Flask(__name__)
 
 # app configuration
-app.config['SECRET_KEY'] = 'PFE_2019'
+app.config['SECRET_KEY'] = 'PFE_ESPRIT_2019'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fwaas.db'
 
 db = SQLAlchemy(app)
@@ -86,6 +87,75 @@ def nc_add():
     return render_template('New_Customer.html', title='New Customer')
 
 
+@app.route("/new/custom/vdom", methods=['GET', 'POST'])
+def nc_customised_vdom():
+    form = AddCustomerVDOM()
+    ip_fgt = "192.168.136.129"
+    fortigate = FortigateApi.Fortigate(ip_fgt, "root", "PFE", "pfepfe")
+    if form.validate_on_submit():
+        flash(Fortigate_Requests.c_vdom(form.vdom_name.data, fortigate))
+    return render_template('Add_Vdom.html', title='Ajouter Vdom', form=form)
+
+
+@app.route("/new/custom/admin", methods=['GET', 'POST'])
+def nc_customised_admin():
+    form = AddAdminVDOM()
+    ip_fgt = "192.168.136.129"
+    fortigate = FortigateApi.Fortigate(ip_fgt, "root", "PFE", "pfepfe")
+    form.vdom_list.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate)]
+    if form.submit_admin.data:
+        flash(Fortigate_Requests.c_admin('root', fortigate, str(form.admin_username.data),
+                                         str(form.admin_password.data)))
+    return render_template('Add_Vdom_Admin.html', title='Ajouter Admin', form=form)
+
+
+@app.route("/new/custom/interface", methods=['GET', 'POST'])
+def nc_customised_interface():
+    form = AddVdomInterface()
+    ip_fgt = "192.168.136.129"
+    fortigate = FortigateApi.Fortigate(ip_fgt, "root", "PFE", "pfepfe")
+    ip_lan_mask = str(form.ip_adresse_lan.data) + " " + str(form.masque_lan.data)
+    form.vdom_list.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate)]
+    if form.submit_lan.data:
+        flash(Fortigate_Requests.c_intrf_vlan(str(form.vdom_list.data), fortigate, str(form.intrf_lan_name.data), 'AGG',
+                                              str(form.vlan_id_lan.data), str(ip_lan_mask),
+                                              allowed_access=" http ping ssh"))
+
+    return render_template('Add_Vdom_Interface.html', title='Ajouter Interface', form=form)
+
+
+@app.route("/new/custom/ippool", methods=['GET', 'POST'])
+def nc_customised_ippool():
+    form = AddVdomIPPool()
+    ip_fgt = "192.168.136.129"
+    fortigate = FortigateApi.Fortigate(ip_fgt, "root", "PFE", "pfepfe")
+    form.vdom_list.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate)]
+    if form.submit_pool.data:
+        print(form.ip_publique.data)
+        print(form.ip_publique_name.data)
+        flash(Fortigate_Requests.c_ippool(fortigate, str(form.ip_publique.data), str(form.ip_publique_name.data),
+                                          str(form.vdom_list.data)))
+    return render_template('Add_Vdom_IPPool.html', title='Ajouter IP Pool', form=form)
+
+
+@app.route("/new/custom/objet", methods=['GET', 'POST'])
+def nc_customised_object():
+    form = NewCustomerCustomForm()
+    return render_template('Add_Vdom_Objet.html', title='Ajouter Objet IP', form=form)
+
+
+@app.route("/new/custom/route", methods=['GET', 'POST'])
+def nc_customised_route():
+    form = NewCustomerCustomForm()
+    return render_template('Add_Vdom_Route.html', title='Ajouter Route', form=form)
+
+
+@app.route("/new/custom/policy", methods=['GET', 'POST'])
+def nc_customised_policy():
+    form = NewCustomerCustomForm()
+    return render_template('Add_Vdom_Policy.html', title='Ajouter Policy', form=form)
+
+
 @app.route("/new/wizard", methods=['GET', 'POST'])
 def nc_w_template():
     # declarations
@@ -95,7 +165,7 @@ def nc_w_template():
     FGT_Vdom = "192.168.1.83"
     admin_name = str(form.vdom_name.data) + "_admin"
     fw = FortigateApi.Fortigate(FGT_Root, "root", "PFE", "pfepfe")
-    fw_vdom = FortigateApi.Fortigate(FGT_Root, form.vdom_name.data, "PFE", "pfepfe")
+    fw_vdom = FortigateApi.Fortigate(FGT_Root, form.vdom_name.data, "admin", "admin")
     ip_lan_mask = str(form.ip_adresse_lan.data) + " " + str(form.masque_lan.data)
     ip_lan_mask_2 = str(form.ip_adresse_lan.data) + "/24"
     ip_wan_mask_2 = str(form.ip_adresse_wan.data) + "/24"
@@ -165,10 +235,15 @@ def nc_customised():
     FGT_Vdom = "192.168.1.83"
     selected_vdom = "root"
     Dest_masque = str(form.destination.data) + "/24"
+    print(str(form.vdom_name.data))
     fw = FortigateApi.Fortigate(FGT_Root, "root", "PFE", "pfepfe")
     fw_vdom = FortigateApi.Fortigate(FGT_Root, str(form.vdom_name.data), "PFE", "pfepfe")
+    # fw_vdom = FortigateApi.Fortigate(FGT_Root, 'root', "PFE", "pfepfe")
+
     Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin",
                                             vdom=str(form.vdom_name.data))
+    """Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin",
+                                            vdom='root')"""
 
     # fw_vdom = FortigateApi.Fortigate(FGT_Root, selected_vdom, "PFE", "pfepfe")
     ip_lan_mask = str(form.ip_adresse_lan.data) + " " + str(form.masque_lan.data)

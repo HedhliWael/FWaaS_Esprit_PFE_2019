@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+    <title>FWaaS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" type="text/css"/>
+    <!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+    <!--
+    anatine, a free CSS web template by ZyPOP (zypopwebtemplates.com/)
+
+    Download: http://zypopwebtemplates.com/
+
+    License: Creative Commons Attribution
+    //-->
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"/>
+</head>
+
+<body>
+
+<section id="body" class="width">
+    <aside id="sidebar" class="column-left">
+
+        <header>
+            <h1><a href="#">FWaaS Management Plateform</a></h1>
+            <h2>Migrate Customers or Create new one</h2>
+        </header>
+
+        <nav id="mainnav">
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('nc_add') }}">Add new Customer</a></li>
+                <li><a href="{{ url_for('nc_w_template') }}">Using template</a></li>
+                <li><a href="{{ url_for('nc_customised') }}">Customised</a></li>
+                <li><a href="{{ url_for('nc_customised_vdom') }}">Ajouter VDOM</a></li>
+                <li><a href="{{ url_for('nc_customised_admin') }}">Ajouter admin VDOM</a></li>
+                <li><a href="{{ url_for('nc_customised_interface') }}">Ajouter Interface</a></li>
+                <li class="selected-item"><a href="{{ url_for('nc_customised_ippool') }}">Ajouter IP Pool</a></li>
+                <li><a href="{{ url_for('nc_customised_object') }}">Ajouter Objet</a></li>
+                <li><a href="{{ url_for('nc_customised_route') }}">Ajouter Route</a></li>
+                <li><a href="{{ url_for('nc_customised_policy') }}">Ajouter policy</a></li>
+                <li><a href="#">Migrate an existing Customer</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <section id="content" class="column-right">
+        <article>
+            <h2>Attention !</h2>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <code>{{ message }} </code>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <h5>Administrator login is needed to access the management plateform</h5>
+            <p>&nbsp;</p>
+
+            {% block content %}
+                <form method="POST" action="">
+                    <h3>Custom VDOM settings form : </h3>
+                    <blockquote>
+                        <p>VDOM choisi: {{ form.vdom_list() }}
+                            <br>
+                    </blockquote>
+
+                    <fieldset>
+
+                        <legend>Pool IP publique</legend>
+                        {{ form.ip_publique_name.label() }} {{ form.ip_publique_name() }}<br>
+                        {{ form.ip_publique.label() }} {{ form.ip_publique() }}<br>
+                        <br>
+                        {{ form.submit_pool(class_="formbutton") }}
+                        <br><br>
+                    </fieldset>
+                </form>
+            {% endblock content %}
+            </fieldset>
+
+        </article>
+    </section>
+    <div class="clear"></div>
+
+</section>
+</body>
+</html>

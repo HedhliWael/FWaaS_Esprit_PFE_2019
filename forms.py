@@ -31,7 +31,7 @@ class NewCustomerWizardForm(FlaskForm):
 class NewCustomerCustomForm(FlaskForm):
     # Vdom Form
     Customer_name = StringField('Customer name : ')
-    vdom_name = StringField('VDOM name : ', default='GCS_Corse')
+    vdom_name = StringField('VDOM name : ', default='root')
     submit_vdom = SubmitField('Add vdom')
 
     # Interfaces Form
@@ -84,3 +84,35 @@ class NewCustomerCustomForm(FlaskForm):
     nat_option = BooleanField(label='Nat')
     action = SelectField('Action', choices=[('permit', 'permit'), ('deny', 'deny')])
     submit_pol = SubmitField('Add Policy')
+
+
+class AddCustomerVDOM(FlaskForm):
+    Customer_name = StringField('Client : ', validators=[length(min=5, max=12), DataRequired()])
+    vdom_name = StringField('Nom du VDOM : ', default='root', validators=[length(min=5, max=12), DataRequired()])
+    submit_vdom = SubmitField('Ajouter VDOM')
+
+
+class AddAdminVDOM(FlaskForm):
+    vdom_list = SelectField('La liste de VDOM', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
+    admin_username = StringField('Nom admin ', validators=[length(min=5, max=12), DataRequired()])
+    admin_password = PasswordField('Mot de passe', validators=[DataRequired()])
+    submit_admin = SubmitField('Add Admin local')
+
+
+class AddVdomInterface(FlaskForm):
+    vdom_list = SelectField('La liste de VDOM', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
+    intrf_lan_name = StringField("Nom de l'interface : ")
+    vlan_id_lan = StringField('VLAN ID ')
+    ip_adresse_lan = StringField(" l'adresse : ")
+    masque_lan = StringField("Masque : ")
+    ssh_access_lan = BooleanField()
+    https_access_lan = BooleanField()
+    ping_access_lan = BooleanField()
+    submit_lan = SubmitField('Ajouter interface')
+
+
+class AddVdomIPPool(FlaskForm):
+    vdom_list = SelectField('La liste de VDOM', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
+    ip_publique = StringField('Pool Adresse : ')
+    ip_publique_name = StringField("Nom d'objet IPPool : ")
+    submit_pool = SubmitField('Ajouter IPPool')

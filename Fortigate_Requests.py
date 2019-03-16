@@ -23,13 +23,10 @@ def c_vdom(vdom_name, Firewall_v2):
     for vdom in res['results']:
         vdom_list.append(vdom['name'])
     if vdom_name in vdom_list:
-        msq = "Vdom Exist ! "
+        msg = "Vdom Exist ! "
     else:
         Firewall_v2.AddVdom(vdom_name)
-        msq = "Vdom " + str(vdom_name) + " created successfully"
-
-    print(vdom_name)
-    print(vdom_list)
+        msg = "Vdom " + str(vdom_name) + " created successfully"
     return msg
 
 
@@ -202,13 +199,20 @@ def g_ippool_list(Firewall_v2_noprev):
     return ippool_list
 
 
+def g_vdom_list(Firewall_v2_noprev):
+    vdom_list = []
+    json_resultat = json.loads(Firewall_v2_noprev.GetVdom())
+    for vd in json_resultat['results']:
+        vdom_list.append(vd['name'])
+    return vdom_list
+
 def g_policy_id(Firewall_v2_noprev, id):
     return Firewall_v2_noprev.GetFwPolicyID(id=str(id))
 
 
 if __name__ == '__main__':
-    vdom_name = "GCS_Corse"
+    vdom_name = "root"
     Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
     Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin", vdom=vdom_name)
 
-    print(g_policy_id(Firewall_v2_noprev, 1))
+    print(g_vdom_list(Firewall_v2_noprev))
