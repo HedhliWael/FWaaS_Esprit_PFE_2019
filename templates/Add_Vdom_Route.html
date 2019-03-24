@@ -93,17 +93,18 @@
     <div class="clear"></div>
 </section>
 <script>
-    let interf = document.getElementById('gw_intrf');
-    let vdom = document.getElementById('vdom_list');
-    let re1 = document.getElementById('vdom_list');
-    var e = document.getElementById("ddlViewBy");
-    var strUser = e.options[e.selectedIndex].value;
+    let vdom = document.getElementById("vdom_list");
+    let interface = document.getElementById("gw_intrf");
     vdom.onchange = function () {
-        interf_value = document.getElementById("gw_intrf");
-        for (i = 0; i < interf_value.options.length; i++) {
-            string = interf_value.options[i].value;
-            if (string.search(re1)) ;
+        for (counter = 0; counter < interface.options.length; counter++) {
+            let selected_interface = interface.options[counter].value
+            if (selected_interface.includes(vdom.value) === false) {
+                interface.options[counter].disabled = true
+            } else {
+                interface.options[counter].disabled = false
+            }
         }
+
     }
 </script>
 </body>
