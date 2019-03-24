@@ -26,9 +26,14 @@ def mutli_element(obj_list):
 
 if __name__ == '__main__':
     obj_list = ['a', 'b', 'c']
+    obj_list2 = ['d', 'e', 'f']
+    flist = obj_list + obj_list2
+    mot = "test*after"
+    print(str(mot.split('*')[1]))
+    print(flist)
     data_list = []
     src_addr = {}
-    print(gen_json_data(src_addr, obj_list, key='srcaddr'))
+    # print(gen_json_data(src_addr, obj_list, key='srcaddr'))
     srcintf = mutli_element(obj_list)
     dstintf = mutli_element(obj_list)
     srcaddr = mutli_element(obj_list)

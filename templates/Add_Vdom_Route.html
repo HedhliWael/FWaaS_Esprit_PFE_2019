@@ -84,11 +84,27 @@
                         <br><br>
                     </fieldset>
                 </form>
+
             {% endblock content %}
+
             </fieldset>
         </article>
     </section>
     <div class="clear"></div>
 </section>
+<script>
+    let interf = document.getElementById('gw_intrf');
+    let vdom = document.getElementById('vdom_list');
+    let re1 = document.getElementById('vdom_list');
+    var e = document.getElementById("ddlViewBy");
+    var strUser = e.options[e.selectedIndex].value;
+    vdom.onchange = function () {
+        interf_value = document.getElementById("gw_intrf");
+        for (i = 0; i < interf_value.options.length; i++) {
+            string = interf_value.options[i].value;
+            if (string.search(re1)) ;
+        }
+    }
+</script>
 </body>
 </html>

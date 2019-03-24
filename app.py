@@ -154,9 +154,13 @@ def nc_customised_object():
 def nc_customised_route():
     form = AddVdomRoute()
     ip_fgt = "192.168.136.129"
+    form.vdom_list.data = "root"
     fortigate_vdom = FortigateApi.Fortigate(ip_fgt, str(form.vdom_list.data), "PFE", "pfepfe")
-    if form.vdom_list.data:
-        form.vdom_list.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate_vdom)]
+    form.gw_intrf.choices = [(intrf, str(intrf.split('*')[1])) for intrf in Fortigate_Requests.g_all_vdom_intef()]
+    form.vdom_list.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate_vdom)]
+
+    if form.submit_route.data:
+        flash("done")
 
     return render_template('Add_Vdom_Route.html', title='Ajouter Route', form=form)
 

@@ -175,6 +175,15 @@ def g_intrf_list(Firewall_v2_noprev):
     return interf_list
 
 
+def g_intrf_list_labeled(vdom_name):
+    fw = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
+    json_resultat = json.loads(fw.GetInterface())
+    interf_list = []
+    for interface in json_resultat:
+        interf_list.append(str(vdom_name) + "*" + str(interface['name']))
+    return interf_list
+
+
 def g_srv_list(Firewall_v2_api2):
     json_resultat = Firewall_v2_api2.get_service_group()
     srv_list = []
@@ -206,13 +215,36 @@ def g_vdom_list(Firewall_v2_noprev):
         vdom_list.append(vd['name'])
     return vdom_list
 
-def g_policy_id(Firewall_v2_noprev, id):
-    return Firewall_v2_noprev.GetFwPolicyID(id=str(id))
+
+def g_policy_id(fw_vdom, id):
+    return fw_vdom.GetFwPolicyID(id=str(id))
+
+
+"""def g_all_vdom_intef():
+    FW = FortigateApi.Fortigate(FGT_Root, "root", "admin", "admin")
+    vdom_list = g_vdom_list(FW)
+    all_interf_list = []
+    for vdom in vdom_list:
+        Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom, "admin", "admin")
+        vdom_interf_list = g_intrf_list_labeled(Firewall_v2_noprev)
+        all_interf_list = all_interf_list + vdom_interf_list
+    return all_interf_list"""
+
+
+def g_all_vdom_intef():
+    FW = FortigateApi.Fortigate("192.168.136.129", "root", "admin", "admin")
+    vdom_list = g_vdom_list(FW)
+    all_interf_list = []
+    for vdom in vdom_list:
+        vdom_interf_list = g_intrf_list_labeled(vdom)
+        all_interf_list = all_interf_list + vdom_interf_list
+    return all_interf_list
 
 
 if __name__ == '__main__':
     vdom_name = "root"
     Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
     Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin", vdom=vdom_name)
-
+    list_intrf = g_all_vdom_intef()
+    print("all interfaces : " + str(list_intrf))
     print(g_vdom_list(Firewall_v2_noprev))

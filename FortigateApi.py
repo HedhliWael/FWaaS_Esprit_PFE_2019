@@ -114,11 +114,11 @@ class Fortigate:
                 req_res = data['results'][y][objects[x][0]]
                 if (type(req_res) is list):
                     if ((req_res != []) and (objects[x][1] != req_res[0]['name'])):
-                        # print 'object list is different:',objects[x][0], objects[x][1] ,'to',req_res[0]['name']
+                        # print 'object list is different:',objects[interf_value][0], objects[interf_value][1] ,'to',req_res[0]['name']
                         identical = False
                         break
                 elif (objects[x][1] != req_res):
-                    # print 'object is different:', objects[x][0], ':', objects[x][1] ,'to', req_res
+                    # print 'object is different:', objects[interf_value][0], ':', objects[interf_value][1] ,'to', req_res
                     identical = False
                     break
             if identical:
@@ -1698,7 +1698,7 @@ class Fortigate:
                 req_res = data['results'][y][objects[x][0]]
                 if (type(req_res) is list):
                     if ((req_res != []) and (objects[x][1] != req_res[0]['name'])):
-                        # print 'object list is different:',objects[x][0], objects[x][1] ,'to',req_res[0]['name']
+                        # print 'object list is different:',objects[interf_value][0], objects[interf_value][1] ,'to',req_res[0]['name']
                         identical = False
                         break
                 elif (objects[x][1] != req_res):
