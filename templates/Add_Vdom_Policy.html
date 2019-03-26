@@ -52,16 +52,7 @@
             <h5>Administrator login is needed to access the management plateform</h5>
             <p>&nbsp;</p>
 
-            <h3>Custom VDOM settings form : </h3>
-            <blockquote>
-                <p>Selected VDOM :
-                    {% if not form.vdom_name.data %}
-                        {{ form.vdom_name.data }} = 'root'
-                    {% else %}
-                        {{ form.vdom_name.data }}
-                    {% endif %}
-                    <br>
-            </blockquote>
+            <h3>Ajouter policy : </h3>
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
@@ -69,100 +60,13 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-            <fieldset>
-                <legend>Customer Form</legend>
-
-                {% block content %}
-                    <form method="POST" action="">
-                        {{ form.hidden_tag() }}
-                        {{ form.Customer_name.label() }}
-                        {{ form.Customer_name() }}
-                        <br>
-                        {{ form.vdom_name.label() }}
-                        {{ form.vdom_name() }}
-                        <br>{{ form.submit_vdom (class_="formbutton") }}<br>
-                        <legend>Vdom Admin Settings</legend>
-                        {{ form.hidden_tag() }}
-                        {{ form.admin_username.label() }}
-                        {{ form.admin_username() }}
-                        <br>
-                        {{ form.admin_password.label() }}
-                        {{ form.admin_password() }}
-                        <br>{{ form.submit_admin (class_="formbutton") }}<br>
-                        <legend>LAN settings</legend>
-                        <p>{{ form.intrf_lan_name.label() }} {{ form.intrf_lan_name() }} </p>
-                        <br>
-                        <table>
-                            <tr>
-                                <th>{{ form.vlan_id_lan.label() }}</th>
-                                <th>{{ form.ip_adresse_lan.label() }}</th>
-                                <th>{{ form.masque_lan.label() }}</th>
-                                <th>LAN access options</th>
-                            </tr>
-                            <tr>
-                                <th>{{ form.vlan_id_lan() }}</th>
-                                <th>{{ form.ip_adresse_lan() }}</th>
-                                <th>{{ form.masque_lan() }}</th>
-                                <th>{{ form.ssh_access_lan(value='Allow_ssh') }} ssh
-                                    {{ form.https_access_lan(value='Allow_https') }} https
-                                    {{ form.ping_access_lan(value='Allow_ping') }} ping
-                                </th>
-                            </tr>
-                        </table>
-                        <br>
-                        {{ form.submit_lan(class_="formbutton") }}
-                        <br>
-                        <legend>WAN settings</legend>
-                        <p>{{ form.intrf_wan_name.label() }} {{ form.intrf_wan_name() }} </p>
-
-                        <br>
-                        <table>
-                            <tr>
-                                <th>{{ form.vlan_id_wan.label() }}</th>
-                                <th>{{ form.ip_adresse_wan.label() }}</th>
-                                <th>{{ form.masque_wan.label() }}</th>
-                                <th>WAN access options</th>
-                            </tr>
-                            <tr>
-                                <th>{{ form.vlan_id_wan() }}</th>
-                                <th>{{ form.ip_adresse_wan() }}</th>
-                                <th>{{ form.masque_wan() }}</th>
-                                <th>{{ form.ssh_access_wan(value='Allow_ssh') }} ssh
-                                    {{ form.https_access_wan(value='Allow_https') }} https
-                                    {{ form.ping_access_Wan(value='Allow_ping') }}ping
-                                </th>
-                            </tr>
-                        </table>
-                        {{ form.submit_wan(class_="formbutton") }}
-                        <br>
-                        <legend>IP Publique</legend>
-                        {{ form.ip_publique_name.label() }} {{ form.ip_publique_name() }}<br>
-                        {{ form.ip_publique.label() }} {{ form.ip_publique() }}<br>
-                        <br>
-                        {{ form.submit_pool(class_="formbutton") }}
-                        <legend>Adresse Object</legend>
-                        {{ form.adr_name.label() }} {{ form.adr_name() }}<br>
-                        {{ form.ojbct_adr.label() }} {{ form.ojbct_adr() }}<br>
-                        <br>
-                        {{ form.submit_obj(class_="formbutton") }}
-                        <legend>Static routes</legend>
-                        <table>
-                            <tr>
-                                <th>{{ form.destination.label() }}</th>
-                                <th>{{ form.gw.label() }}</th>
-                                <th>{{ form.dst_masque.label() }}</th>
-                                <th>{{ form.gw_intrf.label() }}</th>
-                            </tr>
-                            <tr>
-                                <th>{{ form.destination() }}</th>
-                                <th>{{ form.gw() }}</th>
-                                <th>{{ form.dst_masque() }}</th>
-                                <th>{{ form.gw_intrf() }}</th>
-                            </tr>
-                        </table>
-                        <br>
-                        {{ form.submit_route(class_="formbutton") }}
-                        <br><br>
+            {% block content %}
+                <form method="POST" action="">
+                    <blockquote>
+                        <p>VDOM : {{ form.vdom_list() }}
+                            <br>
+                    </blockquote>
+                    <fieldset>
                         <legend>Policies</legend>
                         <table>
                             <tr>
@@ -189,14 +93,31 @@
                         <br>
                         {{ form.submit_pol(class_="formbutton") }}
                         <br><br>
+                    </fieldset>
                     </form>
                 {% endblock content %}
-            </fieldset>
-
         </article>
     </section>
     <div class="clear"></div>
 
 </section>
+<script>
+    let vdom = document.getElementById("vdom_list");
+    let src_interface = document.getElementById("src_intrf");
+    let dst_interface = document.getElementById("dst_intrf");
+    vdom.onchange = function () {
+        for (counter = 0; counter < src_interface.options.length; counter++) {
+            let selected_interface = src_interface.options[counter].value;
+            if (selected_interface.includes(vdom.value) === false) {
+                src_interface.options[counter].disabled = true;
+                dst_interface.options[counter].disabled = true;
+            } else {
+                src_interface.options[counter].disabled = false;
+                dst_interface.options[counter].disabled = false;
+            }
+        }
+
+    }
+</script>
 </body>
 </html>

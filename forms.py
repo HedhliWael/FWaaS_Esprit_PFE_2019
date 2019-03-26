@@ -131,9 +131,25 @@ class AddVdomObject(FlaskForm):
 
 class AddVdomRoute(FlaskForm):
     vdom_list = SelectField('La liste de VDOM', choices=[('echec_de_connexion', 'echec_de_connexion'),
-                                                         ('echec_de_connexion', 'echec_de_connexion')])
+                                                         ('echec_de_connexion', 'echec_de_connexion')],
+                            default=('root', 'root'))
     destination = StringField('Destination', validators=[IPAddress(ipv4=True)])
-    dst_masque = StringField('Masque', validators=[IPAddress(ipv4=True)])
+    dst_masque = SelectField('Masque', choices=[('lan1', 'lan1'), ('lan2', 'lan2')])
     gw = StringField('Passerrelle', validators=[IPAddress(ipv4=True)])
     gw_intrf = SelectField('Available interfaces', choices=[('lan1', 'lan1'), ('lan2', 'lan2')])
     submit_route = SubmitField('Add route')
+
+
+class AddVdomPolicy(FlaskForm):
+    vdom_list = SelectField('La liste de VDOM', choices=[('echec_de_connexion', 'echec_de_connexion'),
+                                                         ('echec_de_connexion', 'echec_de_connexion')],
+                            default=('root', 'root'))
+    src_intrf = SelectField('Source interface', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
+    src_adr = SelectMultipleField('Source Adresse/group', choices=[('lan1_src', 'lan1_src')])
+    dst_adr = SelectMultipleField('Destination Adresse/group', choices=[('lan1_src', 'lan1_src')])
+    services = SelectMultipleField('Services', choices=[('lan1_src', 'lan1_src')])
+    dst_intrf = SelectField('Destination interface', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
+    nat = SelectField('Addresse Translation', choices=[('disabled', 'disabled')])
+    nat_option = BooleanField(label='Nat')
+    action = SelectField('Action', choices=[('permit', 'permit'), ('deny', 'deny')])
+    submit_pol = SubmitField('Add Policy')

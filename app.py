@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash, request
 import Fortigate_Requests
 from forms import LoginForm, NewCustomerWizardForm, NewCustomerCustomForm, AddCustomerVDOM, AddAdminVDOM, \
-    AddVdomInterface, AddVdomIPPool, AddVdomObject, AddVdomRoute
+    AddVdomInterface, AddVdomIPPool, AddVdomObject, AddVdomRoute, AddVdomPolicy
 
 app = Flask(__name__)
 
@@ -153,21 +153,59 @@ def nc_customised_object():
 @app.route("/new/custom/route", methods=['GET', 'POST'])
 def nc_customised_route():
     form = AddVdomRoute()
-    ip_fgt = "192.168.136.129"
-    form.vdom_list.data = "root"
-    fortigate_vdom = FortigateApi.Fortigate(ip_fgt, str(form.vdom_list.data), "PFE", "pfepfe")
+    fortigate_ip = "192.168.136.129"
+    masque_list = ['/8', '/12', '/18', '/20', '/22', '/23', '/24', '/25', '/26', '/27', '/28', '/29', '/30', '/31',
+                   '/32']
+    fortigate_vdom = FortigateApi.Fortigate(fortigate_ip, 'root', "PFE", "pfepfe")
     form.gw_intrf.choices = [(intrf, str(intrf.split('*')[1])) for intrf in Fortigate_Requests.g_all_vdom_intef()]
     form.vdom_list.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate_vdom)]
-
+    form.dst_masque.choices = [(msq, msq) for msq in masque_list]
     if form.submit_route.data:
-        flash("done")
+        fortigate_vdom = FortigateApi.Fortigate(fortigate_ip, str(form.vdom_list.data), "PFE", "pfepfe")
+        print(form.gw_intrf.data.split('*')[1])
+        print("selected vdom : " + str(form.vdom_list.data))
+        dst_masque = str(form.destination.data) + str(form.dst_masque.data)
+        flash(Fortigate_Requests.c_route(2, fortigate_vdom, dst_masque, str(form.gw.data),
+                                         str(form.gw_intrf.data.split('*')[1]),
+                                         "Added from Custom Vdom Form"))
 
     return render_template('Add_Vdom_Route.html', title='Ajouter Route', form=form)
 
 
 @app.route("/new/custom/policy", methods=['GET', 'POST'])
 def nc_customised_policy():
-    form = NewCustomerCustomForm()
+    form = AddVdomPolicy()
+    fortigate_ip = "192.168.136.129"
+    fortigate_root = FortigateApi.Fortigate(fortigate_ip, 'root', "PFE", "pfepfe")
+    fortigate_vdom = FortigateApi.Fortigate(fortigate_ip, str(form.vdom_list.data), "PFE", "pfepfe")
+    fortigate_pyfortiapi = pyfortiapi.FortiGate(ipaddr=fortigate_ip, username="admin", password="admin",
+                                                vdom=str(form.vdom_list.data))
+    form.vdom_list.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate_root)]
+    form.src_intrf.choices = [(intrf, str(intrf.split('*')[1])) for intrf in Fortigate_Requests.g_all_vdom_intef()]
+    form.dst_intrf.choices = [(intrf, str(intrf.split('*')[1])) for intrf in Fortigate_Requests.g_all_vdom_intef()]
+    print(form.vdom_list.data)
+    form.src_adr.choices = [(adr, adr) for adr in Fortigate_Requests.g_adr_list(fortigate_pyfortiapi)]
+    form.dst_adr.choices = [(adr, adr) for adr in Fortigate_Requests.g_adr_list(fortigate_pyfortiapi)]
+    form.services.choices = [(srv, srv) for srv in Fortigate_Requests.g_srv_list(fortigate_pyfortiapi)]
+    form.nat.choices = [(pool, pool) for pool in Fortigate_Requests.g_ippool_list(fortigate_vdom)]
+
+    if form.submit_pol.data:
+        fortigate_root = FortigateApi.Fortigate(fortigate_ip, str(form.vdom_list.data), "PFE", "pfepfe")
+        if form.nat_option.data:
+            flash(Fortigate_Requests.c_policy(fortigate_root, srcintf=str(form.src_intrf.data),
+                                              dstintf=str(form.dst_intrf.data),
+                                              srcaddr=str(form.src_adr.data[0]), dstaddr=str(form.dst_adr.data[0]),
+                                              services=str(form.services.data[0]),
+                                              nat='enable', ipool='enable',
+                                              poolname=str(form.nat.data), comment='added from flask app'))
+        else:
+            flash(Fortigate_Requests.c_policy(fortigate_root, srcintf=str(form.src_intrf.data),
+                                              dstintf=str(form.dst_intrf.data),
+                                              srcaddr=str(form.src_adr.data[0]), dstaddr=str(form.dst_adr.data[0]),
+                                              ipool='disable'
+                                              , poolname='[]', services=str(form.services.data[0]),
+                                              nat='disable', comment='added from flask app'))
+
     return render_template('Add_Vdom_Policy.html', title='Ajouter Policy', form=form)
 
 

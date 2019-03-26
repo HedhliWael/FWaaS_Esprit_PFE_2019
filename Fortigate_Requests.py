@@ -184,6 +184,15 @@ def g_intrf_list_labeled(vdom_name):
     return interf_list
 
 
+def g_objects_list_labeled(vdom_name):
+    fw = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
+    json_resultat = json.loads(fw.GetInterface())
+    interf_list = []
+    for interface in json_resultat:
+        interf_list.append(str(vdom_name) + "*" + str(interface['name']))
+    return interf_list
+
+
 def g_srv_list(Firewall_v2_api2):
     json_resultat = Firewall_v2_api2.get_service_group()
     srv_list = []
