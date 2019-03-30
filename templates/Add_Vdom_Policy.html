@@ -94,8 +94,8 @@
                         {{ form.submit_pol(class_="formbutton") }}
                         <br><br>
                     </fieldset>
-                    </form>
-                {% endblock content %}
+                </form>
+            {% endblock content %}
         </article>
     </section>
     <div class="clear"></div>
@@ -105,6 +105,10 @@
     let vdom = document.getElementById("vdom_list");
     let src_interface = document.getElementById("src_intrf");
     let dst_interface = document.getElementById("dst_intrf");
+    let src_adr = document.getElementById("src_adr");
+    let dst_adr = document.getElementById("dst_adr");
+    let srv = document.getElementById("services");
+    let ippool = document.getElementById("nat");
     vdom.onchange = function () {
         for (counter = 0; counter < src_interface.options.length; counter++) {
             let selected_interface = src_interface.options[counter].value;
@@ -116,6 +120,41 @@
                 dst_interface.options[counter].disabled = false;
             }
         }
+        for (counter = 0; counter < src_adr.options.length; counter++) {
+            let selected_interface = src_adr.options[counter].value;
+            if (selected_interface.includes(vdom.value) === false) {
+                src_adr.options[counter].disabled = true;
+            } else {
+                src_adr.options[counter].disabled = false;
+            }
+        }
+        for (counter = 0; counter < src_adr.options.length; counter++) {
+            let selected_interface = dst_adr.options[counter].value;
+            if (selected_interface.includes(vdom.value) === false) {
+                dst_adr.options[counter].disabled = true;
+            } else {
+                dst_adr.options[counter].disabled = false;
+            }
+        }
+
+        for (counter = 0; counter < srv.options.length; counter++) {
+            let selected_interface = srv.options[counter].value;
+            if (selected_interface.includes(vdom.value) === false) {
+                srv.options[counter].disabled = true;
+            } else {
+                srv.options[counter].disabled = false;
+            }
+        }
+
+        for (counter = 0; counter < ippool.options.length; counter++) {
+            let selected_interface = ippool.options[counter].value;
+            if (selected_interface.includes(vdom.value) === false) {
+                ippool.options[counter].disabled = true;
+            } else {
+                ippool.options[counter].disabled = false;
+            }
+        }
+
 
     }
 </script>

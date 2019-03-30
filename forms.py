@@ -144,12 +144,16 @@ class AddVdomPolicy(FlaskForm):
     vdom_list = SelectField('La liste de VDOM', choices=[('echec_de_connexion', 'echec_de_connexion'),
                                                          ('echec_de_connexion', 'echec_de_connexion')],
                             default=('root', 'root'))
-    src_intrf = SelectField('Source interface', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
-    src_adr = SelectMultipleField('Source Adresse/group', choices=[('lan1_src', 'lan1_src')])
-    dst_adr = SelectMultipleField('Destination Adresse/group', choices=[('lan1_src', 'lan1_src')])
-    services = SelectMultipleField('Services', choices=[('lan1_src', 'lan1_src')])
-    dst_intrf = SelectField('Destination interface', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')])
-    nat = SelectField('Addresse Translation', choices=[('disabled', 'disabled')])
+    src_intrf = SelectField('Source interface', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')],
+                            validators=[DataRequired()])
+    src_adr = SelectMultipleField('Source Adresse/group', choices=[('lan1_src', 'lan1_src')],
+                                  validators=[DataRequired()])
+    dst_adr = SelectMultipleField('Destination Adresse/group', choices=[('lan1_src', 'lan1_src')],
+                                  validators=[DataRequired()])
+    services = SelectMultipleField('Services', choices=[('lan1_src', 'lan1_src')], validators=[DataRequired()])
+    dst_intrf = SelectField('Destination interface', choices=[('lan1_src', 'lan1_src'), ('lan2_src', 'lan2_src')],
+                            validators=[DataRequired()])
+    nat = SelectField('Addresse Translation', choices=[('disabled', 'disabled')], validators=[DataRequired()])
     nat_option = BooleanField(label='Nat')
-    action = SelectField('Action', choices=[('permit', 'permit'), ('deny', 'deny')])
+    action = SelectField('Action', choices=[('permit', 'permit'), ('deny', 'deny')], validators=[DataRequired()])
     submit_pol = SubmitField('Add Policy')

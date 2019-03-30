@@ -176,6 +176,7 @@ def nc_customised_route():
 def nc_customised_policy():
     form = AddVdomPolicy()
     fortigate_ip = "192.168.136.129"
+    # form.vdom_list.data = "VDOM_11"
     fortigate_root = FortigateApi.Fortigate(fortigate_ip, 'root', "PFE", "pfepfe")
     fortigate_vdom = FortigateApi.Fortigate(fortigate_ip, str(form.vdom_list.data), "PFE", "pfepfe")
     fortigate_pyfortiapi = pyfortiapi.FortiGate(ipaddr=fortigate_ip, username="admin", password="admin",
@@ -184,26 +185,28 @@ def nc_customised_policy():
     form.src_intrf.choices = [(intrf, str(intrf.split('*')[1])) for intrf in Fortigate_Requests.g_all_vdom_intef()]
     form.dst_intrf.choices = [(intrf, str(intrf.split('*')[1])) for intrf in Fortigate_Requests.g_all_vdom_intef()]
     print(form.vdom_list.data)
-    form.src_adr.choices = [(adr, adr) for adr in Fortigate_Requests.g_adr_list(fortigate_pyfortiapi)]
-    form.dst_adr.choices = [(adr, adr) for adr in Fortigate_Requests.g_adr_list(fortigate_pyfortiapi)]
-    form.services.choices = [(srv, srv) for srv in Fortigate_Requests.g_srv_list(fortigate_pyfortiapi)]
-    form.nat.choices = [(pool, pool) for pool in Fortigate_Requests.g_ippool_list(fortigate_vdom)]
+    form.src_adr.choices = [(adr, str(adr.split('*')[1])) for adr in Fortigate_Requests.g_all_vdoms_adr()]
+    form.dst_adr.choices = [(adr, str(adr.split('*')[1])) for adr in Fortigate_Requests.g_all_vdoms_adr()]
+    form.services.choices = [(srv, str(srv.split('*')[1])) for srv in Fortigate_Requests.g_all_vdoms_srv()]
+    form.nat.choices = [(pool, str(pool.split('*')[1])) for pool in Fortigate_Requests.g_all_vdoms_ippool()]
 
     if form.submit_pol.data:
         fortigate_root = FortigateApi.Fortigate(fortigate_ip, str(form.vdom_list.data), "PFE", "pfepfe")
         if form.nat_option.data:
-            flash(Fortigate_Requests.c_policy(fortigate_root, srcintf=str(form.src_intrf.data),
-                                              dstintf=str(form.dst_intrf.data),
-                                              srcaddr=str(form.src_adr.data[0]), dstaddr=str(form.dst_adr.data[0]),
-                                              services=str(form.services.data[0]),
+            flash(Fortigate_Requests.c_policy(fortigate_root, srcintf=str(form.src_intrf.data.split('*')[1]),
+                                              dstintf=str(form.dst_intrf.data.split('*')[1]),
+                                              srcaddr=str(form.src_adr.data[0].split('*')[1]),
+                                              dstaddr=str(form.dst_adr.data[0].split('*')[1]),
+                                              services=str(form.services.data[0].split('*')[1]),
                                               nat='enable', ipool='enable',
-                                              poolname=str(form.nat.data), comment='added from flask app'))
+                                              poolname=str(form.nat.data.split('*')[1]),
+                                              comment='added from flask app'))
         else:
-            flash(Fortigate_Requests.c_policy(fortigate_root, srcintf=str(form.src_intrf.data),
-                                              dstintf=str(form.dst_intrf.data),
-                                              srcaddr=str(form.src_adr.data[0]), dstaddr=str(form.dst_adr.data[0]),
-                                              ipool='disable'
-                                              , poolname='[]', services=str(form.services.data[0]),
+            flash(Fortigate_Requests.c_policy(fortigate_root, srcintf=str(form.src_intrf.data.split('*')[1]),
+                                              dstintf=str(form.dst_intrf.data.split('*')[1]),
+                                              srcaddr=str(form.src_adr.data[0].split('*')[1]),
+                                              dstaddr=str(form.dst_adr.data[0].split('*')[1]), poolname='[]',
+                                              ipool='disable', services=str(form.services.data[0].split('*')[1]),
                                               nat='disable', comment='added from flask app'))
 
     return render_template('Add_Vdom_Policy.html', title='Ajouter Policy', form=form)
