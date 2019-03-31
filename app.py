@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, redirect, url_for, flash, request
 import Fortigate_Requests
 from forms import LoginForm, NewCustomerWizardForm, NewCustomerCustomForm, AddCustomerVDOM, AddAdminVDOM, \
-    AddVdomInterface, AddVdomIPPool, AddVdomObject, AddVdomRoute, AddVdomPolicy
+    AddVdomInterface, AddVdomIPPool, AddVdomObject, AddVdomRoute, AddVdomPolicy, MigrationForm
 
 app = Flask(__name__)
 
@@ -39,9 +39,10 @@ db.session.add(admin)
 db.session.commit()"""
 
 
-@app.route('/test')
+@app.route('/test', methods=['GET', 'POST'])
 def testing():
-    return render_template('test.html', title='test')
+    data = "test"
+    return render_template('test.html', title='test', data=data)
 
 
 @app.route("/about")
@@ -378,6 +379,21 @@ def nc_customised():
                                               nat='disable', comment='added from flask app'))"""
 
     return render_template('custom_Customer.html', title='add customer', form=form)
+
+
+@app.route("/migration", methods=['GET', 'POST'])
+def migrate():
+    form = MigrationForm()
+    ip_fgt = "192.168.136.129"
+    fortigate = FortigateApi.Fortigate(ip_fgt, 'root', "PFE", "pfepfe")
+    form.vdom_v1.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate)]
+    form.vdom_v2.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate)]
+    form.vdom_v1_Interfaces.choices = [(interface, str(interface.split('*')[1])) for interface in
+                                       Fortigate_Requests.g_all_vdom_intef()]
+    form.vdom_v2_Interfaces.choices = [(interface, str(interface.split('*')[1])) for interface in
+                                       Fortigate_Requests.g_all_vdom_intef()]
+
+    return render_template('migration.html', title='Migration', form=form)
 
 
 if __name__ == '__main__':

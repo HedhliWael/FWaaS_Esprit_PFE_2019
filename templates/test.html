@@ -14,5 +14,18 @@
 
     {% endif %}
 {% endwith %}
+{% block content %}
+    <form method="POST" action="">
+        <legend>Migration</legend>
+        {{ form.vdom_v1() }}
+        {{ form.vdom_v2() }}
+        {{ form.vdom_v1_Interfaces() }}
+        {{ form.vdom_v2_Interfaces() }}
+        {{ form.interface_Mapping() }}
+        {{ form.submit_mapping() }}
+        <br>
+        {{ form.submit_param (class_="formbutton") }}<br>
+    </form>
+{% endblock content %}
 </body>
 </html>
