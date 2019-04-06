@@ -392,6 +392,19 @@ def migrate():
                                        Fortigate_Requests.g_all_vdom_intef()]
     form.vdom_v2_Interfaces.choices = [(interface, str(interface.split('*')[1])) for interface in
                                        Fortigate_Requests.g_all_vdom_intef()]
+    if form.submit_param.data:
+        print("from web")
+        print(Fortigate_Requests.param_extract(form.interface_Mapping.data))
+        print(Fortigate_Requests.param_extract(form.interface_Mapping.data)[0].get('vdom'))
+        print(Fortigate_Requests.param_extract(form.interface_Mapping.data)[0].get('vdom'))
+        fortigateV1 = FortigateApi.Fortigate(ip_fgt, str(
+            Fortigate_Requests.param_extract(form.interface_Mapping.data)[0].get('vdom')), "PFE", "pfepfe")
+        fortigateV2 = FortigateApi.Fortigate(ip_fgt, str(
+            Fortigate_Requests.param_extract(form.interface_Mapping.data)[1].get('vdom')), "PFE", "pfepfe")
+        for pol in Fortigate_Requests.g_policy_elements(fortigateV1):
+            Fortigate_Requests.c_policy(fortigateV2, srcintf=pol.get('srcintf'), dstintf=pol.get('srcintf'),
+                                        srcaddr=pol.get('srcaddr'), dstaddr=pol.get('dstaddr'),
+                                        services=pol.get('service'), poolname=pol.get('poolname'))
 
     return render_template('migration.html', title='Migration', form=form)
 

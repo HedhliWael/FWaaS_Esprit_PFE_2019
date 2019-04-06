@@ -1,6 +1,29 @@
 import json
 
 
+def param_extract(param):
+    list_map = []
+    dect = {}
+    params = param.split()
+    print(params)
+    for int_map in params:
+        split2 = int_map.split('->')
+        print('first for')
+        for intt in split2:
+            print('second for')
+            print('intt =', str(intt))
+            print('element = ', intt.split('*')[0])
+            print('element = ', intt.split('*')[1])
+            dect['vdom'] = intt.split('*')[0]
+            dect['interface'] = intt.split('*')[1]
+            list_map.append(dect)
+            dect = {}
+            print(list_map)
+    print(list_map[0].get('vdom'))
+    print(list_map[1].get('vdom'))
+    return list_map
+
+
 def gen_dect(src_addr, obj_list):
     for obj in obj_list:
         src_addr['name'] = obj
@@ -63,3 +86,5 @@ if __name__ == '__main__':
         }
     }
     print(payload)
+param = 'Vdom_V1*V1_Vlan200->Vdom_V2*V2_Vlan300 Vdom_V1*V1_vlan100->Vdom_V2*V2_Vlan301'
+print(param_extract(param))

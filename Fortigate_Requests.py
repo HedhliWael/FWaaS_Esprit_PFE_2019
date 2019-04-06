@@ -66,7 +66,7 @@ def c_admin(vdom_name, Firewall_v2, admin_name, password):
 
 
 ## IPOOl
-#ippool_name = vdom_name + "_IPPool"
+# ippool_name = vdom_name + "_IPPool"
 
 
 def c_ippool(Firewall_v2_noprev, ippool, ippool_name, vdom_name):
@@ -299,6 +299,41 @@ def g_all_vdoms_ippool():
         vdom_adr_list = g_ippool_list_labeled(vdom)
         all_adr_list = all_adr_list + vdom_adr_list
     return all_adr_list
+
+
+def param_extract(param):
+    list_map = []
+    dect = {}
+    split1 = param.split()
+    print(split1)
+    for int_map in split1:
+        split2 = int_map.split('->')
+        for vdom_interface in split2:
+            dect['vdom'] = vdom_interface.split('*')[0]
+            dect['interface'] = vdom_interface.split('*')[1]
+            list_map.append(dect)
+            dect = {}
+    return list_map
+
+
+def g_policy_elements(FGT):
+    policy = {}
+    policies = []
+    json_resultat = json.loads(FGT.GetFwPolicyID())
+    for element in json_resultat['results']:
+        policy["srcintf"] = element["srcintf"][0]['name']
+        policy["dstintf"] = element["srcintf"][0]['name']
+        policy["srcaddr"] = element["srcaddr"][0]['name']
+        policy["dstaddr"] = element["dstaddr"][0]['name']
+        policy["service"] = element["service"][0]['name']
+        if element["poolname"]:
+            policy["poolname"] = element["poolname"][0]['name']
+        else:
+            policy["poolname"] = ''
+        print(element["srcintf"][0]['name'])
+        policies.append(policy)
+        policy = {}
+    return policies
 
 
 if __name__ == '__main__':

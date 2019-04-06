@@ -99,7 +99,8 @@
     let interface_v2 = document.getElementById("vdom_v2_Interfaces");
 
     mapping_button.onclick = function () {
-        mapping.value = interface_v1.value + '->' + interface_v2.value
+        let mapping_string = interface_v1.value + '->' + interface_v2.value;
+        mapping.value = mapping.value + ' ' + mapping_string
     };
 
     vdom_v1.onchange = function () {

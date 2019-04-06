@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, SelectMultipleField, FieldList
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, SelectMultipleField, \
+    TextAreaField
 from wtforms.validators import DataRequired, IPAddress, length, number_range
 
 
@@ -168,7 +169,7 @@ class MigrationForm(FlaskForm):
                           validators=[DataRequired()])
     vdom_v2_Interfaces = SelectField('V2 inerfaces ', choices=[('lan1_src', 'lan1_src')],
                                      validators=[DataRequired()])
-    interface_Mapping = StringField("Interface Mapping : ")
+    interface_Mapping = TextAreaField("Interface Mapping : ", render_kw={'readonly': True})
     # interface_Mapping = FieldList(StringField('MAP '), label="Interface mapping")
     submit_mapping = SubmitField('Map interfaces')
     submit_param = SubmitField('Validate and submit')
