@@ -3,6 +3,7 @@ import json
 import ipcalc
 import six
 import pyfortiapi
+import re
 
 ###############################################
 FGT_Root = "192.168.136.129"
@@ -97,6 +98,21 @@ def c_adr_obj(Firewall_v2_noprev, ip, object_name):
         msg = "Object exists , skipping creation"
     else:
         Firewall_v2_noprev.AddFwAddress(object_name, object_adresse)
+        msg = "Object " + object_name + " Created successfully"
+    return msg
+
+
+def c_adr_obj2(Firewall_v2_noprev, ip, object_name):
+    json_resultat = json.loads(Firewall_v2_noprev.GetFwAddress())
+
+    adrs_list = []
+    msg = ""
+    for adr in json_resultat['results']:
+        adrs_list.append(adr['name'])
+    if object_name in adrs_list:
+        msg = "Object exists , skipping creation"
+    else:
+        Firewall_v2_noprev.AddFwAddress(object_name, ip)
         msg = "Object " + object_name + " Created successfully"
     return msg
 
@@ -305,14 +321,14 @@ def param_extract(param):
     list_map = []
     dect = {}
     split1 = param.split()
-    print(split1)
     for int_map in split1:
-        split2 = int_map.split('->')
-        for vdom_interface in split2:
-            dect['vdom'] = vdom_interface.split('*')[0]
-            dect['interface'] = vdom_interface.split('*')[1]
-            list_map.append(dect)
-            dect = {}
+        split2 = re.split('->|\*', int_map)
+        dect['vdom_v1'] = split2[0]
+        dect['interface_v1'] = split2[1]
+        dect['vdom_v2'] = split2[2]
+        dect['interface_v2'] = split2[3]
+        list_map.append(dect)
+        dect = {}
     return list_map
 
 
@@ -322,7 +338,7 @@ def g_policy_elements(FGT):
     json_resultat = json.loads(FGT.GetFwPolicyID())
     for element in json_resultat['results']:
         policy["srcintf"] = element["srcintf"][0]['name']
-        policy["dstintf"] = element["srcintf"][0]['name']
+        policy["dstintf"] = element["dstintf"][0]['name']
         policy["srcaddr"] = element["srcaddr"][0]['name']
         policy["dstaddr"] = element["dstaddr"][0]['name']
         policy["service"] = element["service"][0]['name']
@@ -330,15 +346,48 @@ def g_policy_elements(FGT):
             policy["poolname"] = element["poolname"][0]['name']
         else:
             policy["poolname"] = ''
-        print(element["srcintf"][0]['name'])
         policies.append(policy)
         policy = {}
     return policies
 
 
+def g_ippool_elements(FGT):
+    ippool = {}
+    ippool_list = []
+    json_resultat = json.loads(FGT.GetFwIPpool())
+    print(json_resultat)
+    for element in json_resultat['results']:
+        print('element : ' + str(element))
+        ippool["name"] = element["name"]
+        ippool["type"] = element["type"]
+        ippool["startip"] = element["startip"]
+        ippool["endip"] = element["endip"]
+        ippool_list.append(ippool)
+        ippool = {}
+    return ippool_list
+
+
+def g_objects_elements(FGT):
+    object = {}
+    object_list = []
+    json_resultat = FGT.get_firewall_address()
+    print(json_resultat)
+    for element in json_resultat:
+        if element["type"] == 'ipmask' and not element["subnet"] == '0.0.0.0 0.0.0.0':
+            print('element : ' + str(element))
+            object["name"] = element["name"]
+            object["subnet"] = element["subnet"]
+            object["end-ip"] = element["end-ip"]
+            object_list.append(object)
+        object = {}
+    return object_list
+
+
 if __name__ == '__main__':
-    vdom_name = "root"
+    vdom_name = "Vdom_V1"
+    FGT_Root = '192.168.136.129'
     Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
     Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin", vdom=vdom_name)
     list_intrf = g_ippool_list_labeled(vdom_name)
-    print("all interfaces : " + str(list_intrf))
+    print('voila')
+    print(g_objects_elements(Firewall_v2_api2))

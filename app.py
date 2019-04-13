@@ -385,27 +385,89 @@ def nc_customised():
 def migrate():
     form = MigrationForm()
     ip_fgt = "192.168.136.129"
-    fortigate = FortigateApi.Fortigate(ip_fgt, 'root', "PFE", "pfepfe")
-    form.vdom_v1.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate)]
-    form.vdom_v2.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate)]
+    fortigate_root = FortigateApi.Fortigate(ip_fgt, 'root', "PFE", "pfepfe")
+    form.vdom_v1.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate_root)]
+    form.vdom_v1.default = 'root'
+    form.vdom_v2.choices = [(vd, vd) for vd in Fortigate_Requests.g_vdom_list(fortigate_root)]
+    form.vdom_v2.default = 'root'
     form.vdom_v1_Interfaces.choices = [(interface, str(interface.split('*')[1])) for interface in
                                        Fortigate_Requests.g_all_vdom_intef()]
     form.vdom_v2_Interfaces.choices = [(interface, str(interface.split('*')[1])) for interface in
                                        Fortigate_Requests.g_all_vdom_intef()]
+
     if form.submit_param.data:
         print("from web")
+        print(form.interface_Mapping.data)
         print(Fortigate_Requests.param_extract(form.interface_Mapping.data))
-        print(Fortigate_Requests.param_extract(form.interface_Mapping.data)[0].get('vdom'))
-        print(Fortigate_Requests.param_extract(form.interface_Mapping.data)[0].get('vdom'))
-        fortigateV1 = FortigateApi.Fortigate(ip_fgt, str(
-            Fortigate_Requests.param_extract(form.interface_Mapping.data)[0].get('vdom')), "PFE", "pfepfe")
-        fortigateV2 = FortigateApi.Fortigate(ip_fgt, str(
-            Fortigate_Requests.param_extract(form.interface_Mapping.data)[1].get('vdom')), "PFE", "pfepfe")
-        for pol in Fortigate_Requests.g_policy_elements(fortigateV1):
-            Fortigate_Requests.c_policy(fortigateV2, srcintf=pol.get('srcintf'), dstintf=pol.get('srcintf'),
-                                        srcaddr=pol.get('srcaddr'), dstaddr=pol.get('dstaddr'),
-                                        services=pol.get('service'), poolname=pol.get('poolname'))
+        print("param 1 : " + str(Fortigate_Requests.param_extract(form.interface_Mapping.data)[0].get('vdom')))
+        print("param 2 : " + str(Fortigate_Requests.param_extract(form.interface_Mapping.data)[1].get('vdom')))
+        vdom_v1 = Fortigate_Requests.param_extract(form.interface_Mapping.data)[0].get('vdom_v1')
+        print('vdom v1 : ' + str(vdom_v1))
+        vdom_v2 = Fortigate_Requests.param_extract(form.interface_Mapping.data)[1].get('vdom_v2')
+        fortigate_v1 = FortigateApi.Fortigate(ip_fgt, str(vdom_v1), "PFE", "pfepfe")
+        fortigate_v2 = FortigateApi.Fortigate(ip_fgt, str(vdom_v2), "PFE", "pfepfe")
+        interface_mapping = Fortigate_Requests.param_extract(form.interface_Mapping.data)
 
+        # Importing objects
+        fortigate_pyfortiapi = pyfortiapi.FortiGate(ipaddr=ip_fgt, username="admin", password="admin", vdom=vdom_v1)
+        for element in Fortigate_Requests.g_objects_elements(fortigate_pyfortiapi):
+            Fortigate_Requests.c_adr_obj2(fortigate_v2, element.get('subnet'), element.get('name'))
+
+        # Importing IPPool
+        for element in Fortigate_Requests.g_ippool_elements(fortigate_v1):
+            Fortigate_Requests.c_ippool(fortigate_v2, element.get('startip'), element.get('name'), vdom_v2)
+
+        # Importing Policies
+        for policy in Fortigate_Requests.g_policy_elements(fortigate_v1):
+            print('pol : ' + str(policy))
+            if policy.get('poolname') == '':
+                for map in interface_mapping:
+                    if policy.get('srcintf') == map.get('interface_v1'):
+                        print('map.get src interface v1 : ', map.get('interface_v1'))
+                        print('source pol : ' + str(policy.get('srcintf')))
+                        srcintf = map.get('interface_v2')
+                        print('source interface ' + str(srcintf))
+                    if policy.get('dstintf') == map.get('interface_v1'):
+                        print('map.get interface v1 : ', map.get('interface_v1'))
+                        dstintf = map.get('interface_v2')
+                        print('destination pol : ' + str(policy.get('dstintf')))
+                        print('map.get dst interface v1 : ', map.get('interface_v1'))
+                        print('Destination interface ' + str(dstintf))
+
+                try:
+                    Fortigate_Requests.c_policy(fortigate_v2, srcintf=srcintf, dstintf=dstintf,
+                                                srcaddr=policy.get('srcaddr'), dstaddr=policy.get('dstaddr'),
+                                                services=policy.get('service'), nat='disable',
+                                                poolname=policy.get('poolname'),
+                                                comment='migration vdom_v1', ipool='')
+                    break
+                except:
+                    print("nope")
+            else:
+                for map in interface_mapping:
+                    if policy.get('srcintf') == map.get('interface_v1'):
+                        print('map.get src interface v1 : ', map.get('interface_v1'))
+                        print('source pol : ' + str(policy.get('srcintf')))
+                        srcintf = map.get('interface_v2')
+                        print('source interface ' + str(srcintf))
+                    if policy.get('dstintf') == map.get('interface_v1'):
+                        print('map.get interface v1 : ', map.get('interface_v1'))
+                        dstintf = map.get('interface_v2')
+                        print('destination pol : ' + str(policy.get('dstintf')))
+                        print('map.get dst interface v1 : ', map.get('interface_v1'))
+                        print('Destination interface ' + str(dstintf))
+
+                try:
+                    Fortigate_Requests.c_policy(fortigate_v2, srcintf=srcintf, dstintf=dstintf,
+                                                srcaddr=policy.get('srcaddr'), dstaddr=policy.get('dstaddr'),
+                                                services=policy.get('service'), nat='enable',
+                                                poolname=policy.get('poolname'),
+                                                comment='migration vdom_v1 with nat enabled',
+                                                ipool='enable')
+                    break
+                except:
+                    print("nope")
+    form.process()
     return render_template('migration.html', title='Migration', form=form)
 
 

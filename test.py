@@ -1,26 +1,19 @@
 import json
+import re
 
 
 def param_extract(param):
     list_map = []
     dect = {}
-    params = param.split()
-    print(params)
-    for int_map in params:
-        split2 = int_map.split('->')
-        print('first for')
-        for intt in split2:
-            print('second for')
-            print('intt =', str(intt))
-            print('element = ', intt.split('*')[0])
-            print('element = ', intt.split('*')[1])
-            dect['vdom'] = intt.split('*')[0]
-            dect['interface'] = intt.split('*')[1]
-            list_map.append(dect)
-            dect = {}
-            print(list_map)
-    print(list_map[0].get('vdom'))
-    print(list_map[1].get('vdom'))
+    split1 = param.split()
+    for int_map in split1:
+        split2 = re.split('->|\*', int_map)
+        dect['vdom_v1'] = split2[0]
+        dect['interface_v1'] = split2[1]
+        dect['vdom_v2'] = split2[2]
+        dect['interface_v2'] = split2[3]
+        list_map.append(dect)
+        dect = {}
     return list_map
 
 
