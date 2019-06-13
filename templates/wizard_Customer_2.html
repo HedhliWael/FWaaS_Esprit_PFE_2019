@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+    <title>FWaaS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='new_styles.css') }}" type="text/css"/>
+    <!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+    <!--
+    anatine, a free CSS web template by ZyPOP (zypopwebtemplates.com/)
+
+    Download: http://zypopwebtemplates.com/
+
+    License: Creative Commons Attribution
+    //-->
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0"/>
+</head>
+
+<body>
+<div class="sidenav">
+    <ul>
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="#">Add new Customer</a></li>
+        <li class="selected-item"><a href="{{ url_for('nc_w_template') }}">Using template</a></li>
+        <li><a href="{{ url_for('nc_customised') }}">Customised</a></li>
+        <li><a href="#">Migrate an existing Customer</a></li>
+        <li><a href="{{ url_for('about') }}">About</a></li>
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+</div>
+<div class="main">
+    <article>
+        <h2>Creation de VDOM </h2>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <p id="message_screen">
+                {% for message in messages %}
+                    {{ message }} <br>
+                {% endfor %}
+            {% endif %}
+        </p>
+        {% endwith %}
+        <h3>Parametres generees : </h3>
+        <blockquote><p>
+            - Objets IPs<br>
+            - Objet IP Pool<br>
+            - Regle de securite pour autoriser acces a internet<br>
+            - Translation d adresse par l ip publique fournie <br>
+            - Creation des routes RFC1918 vers l IP de l interface LAN <br>
+            - Creation d une route par default pour acces internet </p></blockquote>
+
+        <fieldset>
+            <legend>Customer Form</legend>
+            {% block content %}
+                <form method="POST" action="">
+
+
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td>{{ form.Customer_name.label() }}</td>
+                            <td>{{ form.Customer_name() }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ form.vdom_name.label() }}</td>
+                            <td>{{ form.vdom_name() }}</td>
+                        </tr>
+                        </tbody>
+                        </tr>
+                    </table>
+                    {{ form.hidden_tag() }}
+                    <br><br>
+                    <legend>Parametres interface LAN</legend>
+                    <br>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>{{ form.vlan_id_lan.label() }}</th>
+                            <th>{{ form.ip_adresse_lan.label() }}</th>
+                            <th>{{ form.masque_lan.label() }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th>{{ form.vlan_id_lan() }}</th>
+                            <th>{{ form.ip_adresse_lan() }}</th>
+                            <th>{{ form.masque_lan() }}</th>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                    <br>
+                    <legend>Controle d acces interface LAN</legend>
+                    <p> {{ form.ssh_access_lan(value='Allow_ssh') }} ssh
+                        {{ form.https_access_lan(value='Allow_https') }} https
+                        {{ form.ping_access_lan(value='Allow_ping') }} ping</p>
+                    <br>
+                    <legend>Parametres interface WAN</legend>
+                    <br>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>{{ form.vlan_id_wan.label() }}</th>
+                            <th>{{ form.ip_adresse_wan.label() }}</th>
+                            <th>{{ form.masque_wan.label() }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th>{{ form.vlan_id_wan() }}</th>
+                            <th>{{ form.ip_adresse_wan() }}</th>
+                            <th>{{ form.masque_wan() }}</th>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <legend>Controle d acces interface WAN</legend>
+                    <p>{{ form.ssh_access_wan(value='Allow_ssh') }} ssh
+                        {{ form.https_access_wan(value='Allow_https') }} https
+                        {{ form.ping_access_Wan(value='Allow_ping') }}ping</p>
+                    <legend>Adresse IP publique</legend>
+
+                    <table class="table">
+
+                        <tbody>
+                        <tr>
+                            <td>{{ form.ip_publique.label() }}</td>
+                            <td>{{ form.ip_publique() }}</td>
+                        </tr>
+                        </tbody>
+                        </tr>
+                    </table>
+                    {{ form.submit(class_="formbutton") }}
+                </form>
+            {% endblock content %}
+        </fieldset>
+
+    </article>
+</div>
+</body>
+</html>

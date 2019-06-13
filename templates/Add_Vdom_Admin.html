@@ -51,24 +51,25 @@
             <h2>Attention !</h2>
             <h5>Administrator login is needed to access the management plateform</h5>
             <p>&nbsp;</p>
+            {% block content %}
+                <form method="POST" action="">
 
-            <h3>Custom VDOM settings form : </h3>
-            <blockquote>
-                <p>VDOM choisi: {{ form.vdom_list() }}
-                    <br>
-            </blockquote>
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <code>{{ message }} </code>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            <fieldset>
-                <legend>Customer Form</legend>
+                    <h3>Custom VDOM settings form : </h3>
+                    <blockquote>
+                        <p>VDOM choisi: {{ form.vdom_list() }}
+                            <br>
+                    </blockquote>
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <code>{{ message }} </code>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <fieldset>
+                        <legend>Customer Form</legend>
 
-                {% block content %}
-                    <form method="POST" action="">
+
                         {{ form.hidden_tag() }}
                         {{ form.admin_username.label() }}
                         {{ form.admin_username() }}
@@ -77,8 +78,8 @@
                         {{ form.admin_password() }}
                         <br>{{ form.submit_admin (class_="formbutton") }}<br>
                         <br><br>
-                    </form>
-                {% endblock content %}
+                </form>
+            {% endblock content %}
             </fieldset>
 
         </article>

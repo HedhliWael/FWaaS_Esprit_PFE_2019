@@ -22,21 +22,21 @@
     <aside id="sidebar" class="column-left">
 
         <header>
-            <h1><a href="#">FWaaS Management Plateform</a></h1>
-            <h2>Migrate Customers or Create new one</h2>
+            <h1><a href="#">Management de la <br>plateforme FWaaS</a></h1>
+            <h2>Creation et migration des clients</h2>
         </header>
 
         <nav id="mainnav">
             <ul>
                 <li class="selected-item"><a href="index.html">Login</a></li>
-                <li><<a href="{{ url_for('about') }}">About</a></li>
+                <li><<a href="{{ url_for('about') }}">apropos</a></li>
             </ul>
         </nav>
     </aside>
     <section id="content" class="column-right">
         <article>
             <h2>Attention !</h2>
-            <h5>Administrator login is needed to access the management plateform</h5>
+            <h5>Authentification est necessaire </h5>
             <p>&nbsp;</p>
 
             {% with messages = get_flashed_messages() %}
@@ -55,7 +55,7 @@
                         {{ form.username.label() }}
                         {{ form.username() }}
                         <br>
-                        {{ form.password.label() }}
+                        {{ form.password.label() }}&nbsp;
                         {{ form.password() }}
                         <br>
                         {{ form.submit(class_="formbutton") }}

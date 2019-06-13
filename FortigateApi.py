@@ -238,6 +238,40 @@ class Fortigate:
         }
         return self.ApiAdd('cmdb/system/admin/', payload)
 
+    def AddSystemAdminVdom(self, name, password, vdom, profile='prof_admin', remote_auth='disable'):
+        """
+        Create a system admin on the vdom.
+
+        Parameters
+        ----------
+        name: the system admin name (type string)
+        password: the system admin password (type string)
+        profile: the profile, choice: prof_admin/super_admin (type string)(default prof_admin)
+        remote_auth: choice: enable/disable (type string)(default disable)
+
+        Returns
+        -------
+        Http status code: 200 if ok, 4xx if an error occurs
+        """
+        name = str(name)
+        vdom = str(vdom)
+        password = str(password)
+        # profile: prof_admin/super_admin
+        payload = {'json':
+            {
+                'name': name,
+                'password': password,
+                'accprofile': profile,
+                'remote-auth': remote_auth,
+                "vdom": [
+                    {
+                        "name": vdom,
+                    }
+                ]
+            }
+        }
+        return self.ApiAdd('cmdb/system/admin/', payload)
+
     def AddSystemAdminIdempotent(self, name, password, profile='prof_admin', remote_auth='disable'):
         """
         Create a system admin on the vdom, return ok if it already exist.

@@ -58,7 +58,7 @@ def c_admin(vdom_name, Firewall_v2, admin_name, password):
     if admin_name in admin_list:
         msg = "Admin account already exist , Skipping Creation"
     else:
-        Firewall_v2.AddSystemAdmin(admin_name, password, profile='prof_admin', remote_auth='disable')
+        Firewall_v2.AddSystemAdminVdom(admin_name, password, vdom_name, profile='prof_admin', remote_auth='disable')
         msg = "Admin Created successfully"
     return msg
 
@@ -88,7 +88,6 @@ def c_ippool(Firewall_v2_noprev, ippool, ippool_name, vdom_name):
 ## Adresse Objects
 def c_adr_obj(Firewall_v2_noprev, ip, object_name):
     json_resultat = json.loads(Firewall_v2_noprev.GetFwAddress())
-
     adrs_list = []
     msg = ""
     object_adresse = str(ipcalc.Network(ip).network()) + "/" + str(ipcalc.Network(ip).subnet())
@@ -142,7 +141,7 @@ def c_route(selector, Firewall_v2_noprev, destination, gw, interface, comment):
     msg = ""
     route_list = []
     print('------------------------------------------------')
-    gw_r = ipcalc.Network(gw).host_last()
+    gw_r = ipcalc.Network(gw).host_first()
     print("route for " + destination)
     print("GW param " + str(gw))
     print("Real GW " + str(gw_r))
@@ -367,6 +366,59 @@ def g_ippool_elements(FGT):
     return ippool_list
 
 
+def g_admin_accounts_elements(FGT):
+    admin = {}
+    admin_list = []
+    json_resultat = json.loads(FGT.GetSystemAdmin())
+    print(json_resultat)
+    for element in json_resultat['results']:
+        print('element : ' + str(element))
+        admin["name"] = element["q_origin_key"]
+        for vd in element["vdom"]:
+            admin["vdom"] = vd["name"]
+        admin_list.append(admin)
+        admin = {}
+    return admin_list
+
+
+def g_routes_elements(FGT):
+    route = {}
+    route_list = []
+    json_resultat = json.loads(FGT.GetRouterStaticID())
+    print(json_resultat)
+    for element in json_resultat['results']:
+        print('element : ' + str(element))
+        route["dst"] = element["dst"]
+        route["gateway"] = element["gateway"]
+        route["device"] = element["device"]
+        route_list.append(route)
+        route = {}
+    return route_list
+
+
+def g_intrf_adr_list(FGT, device):
+    intrf = {}
+    interf_list = []
+    ip = 'none'
+    json_resultat = json.loads(FGT.GetInterface())
+    print(json_resultat)
+    for element in json_resultat:
+        print('element : ' + str(element))
+        intrf["name"] = element["name"]
+        intrf["ip"] = element["ip"]
+        interf_list.append(intrf)
+        intrf = {}
+    print(interf_list)
+    for index in interf_list:
+        print('index  = ' + str(index))
+        print('index name = ' + str(index['name']))
+        print('index ip = ' + str(index['ip']))
+        if index['name'] == device:
+            ip = index['ip']
+    return ip
+
+
+
 def g_objects_elements(FGT):
     object = {}
     object_list = []
@@ -384,10 +436,10 @@ def g_objects_elements(FGT):
 
 
 if __name__ == '__main__':
-    vdom_name = "Vdom_V1"
+    vdom_name = "fgt_v2"
     FGT_Root = '192.168.136.129'
     Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
     Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin", vdom=vdom_name)
     list_intrf = g_ippool_list_labeled(vdom_name)
     print('voila')
-    print(g_objects_elements(Firewall_v2_api2))
+    print(g_intrf_adr_list(Firewall_v2_noprev, 'fgt1_vlan88').split()[0])

@@ -1,0 +1,246 @@
+body {
+    font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+    height: 100%;
+    width: 450px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #80B763;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+.sidenav a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #FFFFFF;
+    display: block;
+}
+
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+
+.main {
+    margin-left: 450px; /* Same as the width of the sidenav */
+    font-size: 28px; /* Increased text to enable scrolling */
+    padding: 0px 10px;
+}
+
+code, blockquote {
+    display: block;
+    border-left: 5px solid #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+blockquote p {
+    font-style: italic;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    margin: 0;
+    height: 1%;
+}
+
+p {
+    line-height: 2.0em;
+    margin-bottom: 20px;
+}
+
+a {
+    color: #6FAB4F;
+}
+
+a:hover {
+    color: #000;
+}
+
+a:focus {
+    outline: none;
+}
+
+a.button {
+    background-color: #80B763;
+    border-radius: 5px;
+    color: #FFFFFF;
+    display: inline-block;
+    font-weight: bold;
+    padding: 8px 22px;
+    font-size: 0.8em;
+    letter-spacing: 0.25px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+a.button-reversed {
+    background-color: #333;
+}
+
+a.button:hover {
+    background-color: #669D48;
+}
+
+a.button-reversed:hover {
+    background-color: #222;
+}
+
+fieldset {
+    display: block;
+    border: none;
+    border-top: 1px solid #e0e0e0;
+}
+
+fieldset legend {
+    font-weight: bold;
+    padding-right: 10px;
+    color: #999;
+}
+
+fieldset form {
+    padding-top: 15px;
+}
+
+fieldset p label {
+    float: left;
+    width: 150px;
+    font-family: "Source Sans Pro", "sans-serif";
+}
+
+fieldset form input, fieldset form select, fieldset form textarea {
+    padding: 5px;
+    color: #333333;
+    font-size: 13px;
+    font-family: "Source Sans Pro", "sans-serif";
+    border: 1px solid #ddd;
+}
+
+fieldset form input.formbutton {
+    border: none;
+    background-color: #80B763;
+    border-radius: 5px;
+    color: #FFFFFF;
+    display: inline-block;
+    font-weight: bold;
+    padding: 8px 22px;
+    font-size: 0.8em;
+    letter-spacing: 0.25px;
+    text-decoration: none;
+    text-transform: uppercase;
+
+
+}
+
+h1 {
+    font-size: 2.4em;
+}
+
+h2 {
+    color: #2f2f2f;
+    font-size: 1.8em;
+    font-weight: bold;
+    padding: 0 0 5px;
+    margin: 0;
+}
+
+h3 {
+    color: #80B763;
+    font-size: 1.6em;
+    padding-bottom: 10px;
+}
+
+h4 {
+    padding-bottom: 10px;
+    font-size: 1.4em;
+    color: #000;
+}
+
+h5 {
+    padding-bottom: 10px;
+    font-size: 1.2em;
+    color: #666666;
+}
+
+ul, ol {
+    margin: 0 0 35px 35px;
+}
+
+li {
+    padding-bottom: 5px;
+}
+
+/** header **/
+header {
+    padding: 30px 17px 30px;
+    margin: 0 auto;
+}
+
+header h1 {
+    text-align: right;
+}
+
+header h1 a,
+header h1 a:hover,
+header h1 a:visited {
+    color: #fff;
+    font-size: 1em;
+    text-decoration: none;
+    letter-spacing: -2px;
+}
+
+header h2 {
+    color: #C4DDB6;
+    text-align: right;
+    font-size: 0.8em;
+    font-weight: normal;
+    padding-bottom: 0;
+    letter-spacing: 0;
+}
+
+table.table {
+    font-family: "Times New Roman", Times, serif;
+    width: 100px;
+    text-align: left;
+}
+
+table.table td, table.table th {
+}
+
+table.table tbody td {
+    font-size: 20px;
+}
+
+table.table thead {
+    background: #80B763;
+    background: -moz-linear-gradient(top, #a0c98a 0%, #8cbe72 66%, #80B763 100%);
+    background: -webkit-linear-gradient(top, #a0c98a 0%, #8cbe72 66%, #80B763 100%);
+    background: linear-gradient(to bottom, #a0c98a 0%, #8cbe72 66%, #80B763 100%);
+}
+
+table.table thead th {
+    font-weight: bold;
+}
+
+#message_screen {
+    background-color: #FFFFFF;
+    color: #FF6C47;
+    border: 1px solid #6D6D6D;
+    font-family: 'times new roman';
+    font-style: italic;
+    font-size: 12px;
+    font-variant: normal;
+    line-height: 12px;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {
+        padding-top: 15px;
+    }
+
+    .sidenav a {
+        font-size: 18px;
+    }
+}
