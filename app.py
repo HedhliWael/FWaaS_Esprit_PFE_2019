@@ -126,8 +126,6 @@ def nc_customised_interface():
             access = access + ' ' + 'ping'
         if form.ssh_access_lan.data:
             access = access + ' ' + 'ssh'
-        print("http" + str(form.https_access_lan.data))
-        print("access = " + str(access))
         flash(Fortigate_Requests.c_intrf_vlan(str(form.vdom_list.data), fortigate, str(form.intrf_lan_name.data), 'AGG',
                                               str(form.vlan_id_lan.data), str(ip_lan_mask),
                                               allowed_access=" http ping ssh"))
@@ -353,14 +351,6 @@ def nc_customised():
 
     if form.submit_pol.data:
 
-        print(form.nat_option.data)
-        print(form.nat.data)
-        print(form.src_intrf.data)
-        print(form.src_adr.data)
-        print(form.services.data)
-        print(form.dst_intrf.data)
-        print(form.dst_adr.data)
-        id = 15
         if form.nat_option.data:
             flash(Fortigate_Requests.c_policy(fw_vdom, srcintf=str(form.src_intrf.data),
                                               dstintf=str(form.dst_intrf.data),
@@ -406,13 +396,7 @@ def migrate():
                                        Fortigate_Requests.g_all_vdom_intef()]
 
     if form.submit_param.data:
-        print("from web")
-        print(form.interface_Mapping.data)
-        print(Fortigate_Requests.param_extract(form.interface_Mapping.data))
-        print("param 1 : " + str(Fortigate_Requests.param_extract(form.interface_Mapping.data)[0].get('vdom')))
-        print("param 2 : " + str(Fortigate_Requests.param_extract(form.interface_Mapping.data)[1].get('vdom')))
         vdom_v1 = Fortigate_Requests.param_extract(form.interface_Mapping.data)[0].get('vdom_v1')
-        print('vdom v1 : ' + str(vdom_v1))
         vdom_v2 = Fortigate_Requests.param_extract(form.interface_Mapping.data)[1].get('vdom_v2')
         fortigate_v1 = FortigateApi.Fortigate(ip_fgt, str(vdom_v1), "PFE", "pfepfe")
         fortigate_v2 = FortigateApi.Fortigate(ip_fgt, str(vdom_v2), "PFE", "pfepfe")
@@ -441,22 +425,14 @@ def migrate():
                   '255.255.255.128': '/25'
                   }
         mask = masque['255.255.255.0']
-        print("hedha el masque mi Dict = " + str(mask))
         for route in Fortigate_Requests.g_routes_elements(fortigate_v1):
             for int_map in interface_mapping:
                 if route.get('device') == int_map.get('interface_v1'):
                     device = int_map.get('interface_v2')
                     new_gw = Fortigate_Requests.g_intrf_adr_list(fortigate_v2, int_map.get('interface_v2'))
-                    print("new gw = " + new_gw)
-                    print("interface v2 = " + str(int_map.get('interface_v2')))
 
                 try:
-                    print("dst = " + str(route.get('dst')))
-                    print("gw = " + str(new_gw))
-                    print("device = " + str(device))
-                    print("gw with mask = " + str(new_gw.split()[0]) + str(masque.get(new_gw.split()[1])))
                     gw_mask = str(new_gw.split()[0]) + str(masque.get(new_gw.split()[1]))
-                    print("what is this = " + masque.get(new_gw.split()[1]))
                     Fortigate_Requests.c_route(1, fortigate_v2, route.get('dst'), gw_mask, device,
                                                'exported from fortigate v1')
                     break
@@ -465,20 +441,12 @@ def migrate():
 
         # Importing Policies
         for policy in Fortigate_Requests.g_policy_elements(fortigate_v1):
-            print('pol : ' + str(policy))
             if policy.get('poolname') == '':
                 for int_map in interface_mapping:
                     if policy.get('srcintf') == int_map.get('interface_v1'):
-                        print('map.get src interface v1 : ', int_map.get('interface_v1'))
-                        print('source pol : ' + str(policy.get('srcintf')))
                         srcintf = int_map.get('interface_v2')
-                        print('source interface ' + str(srcintf))
                     if policy.get('dstintf') == int_map.get('interface_v1'):
-                        print('map.get interface v1 : ', int_map.get('interface_v1'))
                         dstintf = int_map.get('interface_v2')
-                        print('destination pol : ' + str(policy.get('dstintf')))
-                        print('map.get dst interface v1 : ', int_map.get('interface_v1'))
-                        print('Destination interface ' + str(dstintf))
 
                 try:
                     Fortigate_Requests.c_policy(fortigate_v2, srcintf=srcintf, dstintf=dstintf,
@@ -492,18 +460,9 @@ def migrate():
             else:
                 for int_map in interface_mapping:
                     if policy.get('srcintf') == int_map.get('interface_v1'):
-                        print('map.get src interface v1 : ', int_map.get('interface_v1'))
-                        print('source pol : ' + str(policy.get('srcintf')))
                         srcintf = int_map.get('interface_v2')
-                        print('source interface ' + str(srcintf))
                     if policy.get('dstintf') == int_map.get('interface_v1'):
-                        print('map.get interface v1 : ', int_map.get('interface_v1'))
                         dstintf = int_map.get('interface_v2')
-                        print('destination pol : ' + str(policy.get('dstintf')))
-                        print('map.get dst interface v1 : ', int_map.get('interface_v1'))
-                        print('Destination interface ' + str(dstintf))
-                        print('******** pool name = ' + str(policy.get('poolname')))
-
                 try:
                     Fortigate_Requests.c_policy(fortigate_v2, srcintf=srcintf, dstintf=dstintf,
                                                 srcaddr=policy.get('srcaddr'), dstaddr=policy.get('dstaddr'),

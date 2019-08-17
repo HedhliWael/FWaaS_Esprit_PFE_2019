@@ -418,7 +418,6 @@ def g_intrf_adr_list(FGT, device):
     return ip
 
 
-
 def g_objects_elements(FGT):
     object = {}
     object_list = []
@@ -434,9 +433,8 @@ def g_objects_elements(FGT):
         object = {}
     return object_list
 
-
 if __name__ == '__main__':
-    vdom_name = "fgt_v2"
+    vdom_name = "root"
     FGT_Root = '192.168.136.129'
     Firewall_v2_noprev = FortigateApi.Fortigate(FGT_Root, vdom_name, "admin", "admin")
     Firewall_v2_api2 = pyfortiapi.FortiGate(ipaddr=FGT_Root, username="admin", password="admin", vdom=vdom_name)
